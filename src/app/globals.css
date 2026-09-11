@@ -3,42 +3,55 @@
 @tailwind utilities;
 
 :root {
-  --bg-app: #090A0F;
-  --bg-surface: #11131A;
-  --bg-surface-hover: #181B26;
-  --bg-subtle: #1F2333;
+  /* Dayos / Brutalist Color Tokens */
+  --color-carbon-black: #000000;
+  --color-paper-white: #ffffff;
+  --color-warm-canvas: #e5e5e5;
+  --color-mist-gray: #f3f3f3;
+  --color-ash: #c6c6c6;
+  --color-smoke: #979797;
+  --color-slate: #444444;
+  --color-graphite: #2f2f2f;
+  --color-mint-chip: #d1ffca;
+  --color-voltage-yellow: #fff100;
+
+  /* Component Surface Mappings */
+  --bg-app: var(--color-warm-canvas);
+  --bg-surface: var(--color-paper-white);
+  --bg-surface-hover: var(--color-mist-gray);
+  --bg-subtle: var(--color-mist-gray);
   
-  --border-dim: #222638;
-  --border-bright: #333952;
+  --border-dim: var(--color-ash);
+  --border-bright: #adadad;
   
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-tertiary: #64748B;
+  --text-primary: var(--color-carbon-black);
+  --text-secondary: var(--color-slate);
+  --text-tertiary: var(--color-smoke);
   
-  --accent-primary: #6366F1;
-  --accent-hover: #4F46E5;
-  --accent-subtle: rgba(99, 102, 241, 0.12);
+  --accent-primary: var(--color-carbon-black);
+  --accent-hover: var(--color-slate);
+  --accent-subtle: var(--color-mint-chip);
   
-  --success: #10B981;
-  --success-subtle: rgba(16, 185, 129, 0.12);
+  --success: #059669;
+  --success-subtle: var(--color-mint-chip);
   
-  --error: #EF4444;
-  --error-subtle: rgba(239, 68, 68, 0.12);
+  --error: #dc2626;
+  --error-subtle: #fee2e2;
   
-  --warning: #F59E0B;
+  --warning: #d97706;
 }
 
 body {
-  background-color: var(--bg-app);
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  background-color: var(--color-warm-canvas);
+  color: var(--color-carbon-black);
+  font-family: var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
 }
 
 /* Custom selection styling */
 ::selection {
-  background-color: rgba(99, 102, 241, 0.3);
-  color: #ffffff;
+  background-color: var(--color-mint-chip);
+  color: var(--color-carbon-black);
 }
 
 /* 3D Transform Utilities for Hardware-Accelerated Flashcards */
@@ -57,4 +70,13 @@ body {
 
 .rotate-y-180 {
   transform: rotateY(180deg);
+}
+
+/* Brutalist Typography Utilities */
+.font-display {
+  font-family: var(--font-display, var(--font-inter), sans-serif);
+  font-stretch: condensed;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+  text-transform: uppercase;
 }

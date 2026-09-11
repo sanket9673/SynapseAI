@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { History, X, Trash2, Layers, BookOpen } from "lucide-react";
+import { History, X, BookOpen } from "lucide-react";
 import { deckStorage, type PersistedDeckMetadata } from "@/lib/storage";
 import { DeckHistoryItem } from "./DeckHistoryItem";
 import { Button } from "@/components/ui";
@@ -65,14 +65,14 @@ export const DeckHistoryDrawer: React.FC<DeckHistoryDrawerProps> = ({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
-          {/* Backdrop Blur */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 bg-carbon-black/60 backdrop-blur-sm"
           />
 
           {/* Slide-over Drawer Sheet */}
@@ -81,19 +81,19 @@ export const DeckHistoryDrawer: React.FC<DeckHistoryDrawerProps> = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 220 }}
-            className="relative w-full max-w-md bg-surface border-l border-border-dim shadow-2xl z-50 flex flex-col h-full overflow-hidden"
+            className="relative w-full max-w-md bg-paper-white border-l border-ash z-50 flex flex-col h-full overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-border-dim bg-surface/90 backdrop-blur-md">
+            <div className="flex items-center justify-between p-5 border-b border-ash bg-paper-white">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-accent-subtle text-accent-primary border border-accent-primary/30 shadow-subtle">
+                <div className="p-2 rounded-lg bg-mint-chip text-carbon-black">
                   <History className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-text-primary">
+                  <h3 className="text-sm font-bold uppercase tracking-tight text-carbon-black">
                     Study Deck History
                   </h3>
-                  <p className="text-[11px] font-mono text-text-tertiary">
+                  <p className="text-[11px] font-mono text-smoke">
                     {decks.length} {decks.length === 1 ? "session" : "sessions"} saved locally
                   </p>
                 </div>
@@ -105,7 +105,7 @@ export const DeckHistoryDrawer: React.FC<DeckHistoryDrawerProps> = ({
                     size="sm"
                     variant="ghost"
                     onClick={handleClearAll}
-                    className="text-xs text-text-tertiary hover:text-error"
+                    className="text-xs text-smoke hover:text-carbon-black"
                     title="Clear all saved history"
                   >
                     Clear All
@@ -116,7 +116,7 @@ export const DeckHistoryDrawer: React.FC<DeckHistoryDrawerProps> = ({
                   variant="ghost"
                   onClick={onClose}
                   aria-label="Close history drawer"
-                  className="h-8 w-8 text-text-tertiary hover:text-text-primary"
+                  className="h-8 w-8 text-smoke hover:text-carbon-black"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -124,17 +124,17 @@ export const DeckHistoryDrawer: React.FC<DeckHistoryDrawerProps> = ({
             </div>
 
             {/* Decks List */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3">
+            <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-warm-canvas/30">
               {decks.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3 text-text-tertiary">
-                  <div className="p-3 rounded-2xl bg-subtle/60 border border-border-dim">
-                    <BookOpen className="h-8 w-8 opacity-50" />
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3 text-smoke">
+                  <div className="p-3 rounded-2xl bg-paper-white border border-ash">
+                    <BookOpen className="h-8 w-8 text-slate opacity-50" />
                   </div>
                   <div className="space-y-1">
-                    <h4 className="text-sm font-semibold text-text-secondary">
+                    <h4 className="text-sm font-bold uppercase text-carbon-black">
                       No Past Sessions
                     </h4>
-                    <p className="text-xs text-text-tertiary max-w-xs leading-relaxed">
+                    <p className="text-xs text-slate max-w-xs leading-relaxed">
                       Decks generated with the AI active recall engine will automatically save here for offline review.
                     </p>
                   </div>
@@ -160,3 +160,4 @@ export const DeckHistoryDrawer: React.FC<DeckHistoryDrawerProps> = ({
     </AnimatePresence>
   );
 };
+

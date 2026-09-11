@@ -15,21 +15,21 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent-primary text-white hover:bg-accent-hover shadow-subtle hover:shadow-glow border border-transparent",
+    "bg-carbon-black text-paper-white hover:bg-slate active:scale-[0.98] border border-carbon-black",
   secondary:
-    "bg-subtle text-text-primary hover:bg-surface-hover hover:text-white border border-border-dim",
+    "bg-paper-white text-carbon-black hover:bg-mist-gray active:scale-[0.98] border border-ash",
   outline:
-    "bg-transparent text-text-primary hover:bg-subtle/60 border border-border-bright hover:border-accent-primary/60",
+    "bg-transparent text-slate hover:text-carbon-black hover:border-carbon-black border border-ash active:scale-[0.98]",
   ghost:
-    "bg-transparent text-text-secondary hover:text-text-primary hover:bg-subtle/50 border border-transparent",
+    "bg-transparent text-slate hover:text-carbon-black hover:bg-mist-gray/80 border border-transparent",
   danger:
-    "bg-error text-white hover:bg-red-600 shadow-subtle border border-transparent",
+    "bg-error text-white hover:bg-red-700 active:scale-[0.98] border border-transparent",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-xs gap-1.5 rounded-md",
-  md: "h-10 px-4 text-sm gap-2 rounded-lg",
-  lg: "h-12 px-6 text-base gap-2.5 rounded-lg",
+  sm: "h-8 px-3 text-xs gap-1.5 rounded-md font-medium",
+  md: "h-11 px-5 text-sm gap-2 rounded-lg font-medium",
+  lg: "h-13 px-7 text-base gap-2.5 rounded-lg font-medium",
   icon: "h-10 w-10 p-0 rounded-lg justify-center",
 };
 
@@ -56,10 +56,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         aria-busy={isLoading ? "true" : undefined}
         className={cn(
-          "inline-flex items-center justify-center font-medium select-none whitespace-nowrap",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-app",
-          "transition-all duration-100 ease-out active:scale-[0.98]",
-          "disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:active:scale-100",
+          "inline-flex items-center justify-center select-none whitespace-nowrap",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carbon-black focus-visible:ring-offset-2 focus-visible:ring-offset-warm-canvas",
+          "transition-all duration-150 ease-out",
+          "disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed",
           variantStyles[variant],
           sizeStyles[size],
           className

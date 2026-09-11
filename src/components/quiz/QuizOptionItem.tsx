@@ -32,40 +32,40 @@ export const QuizOptionItem: React.FC<QuizOptionItemProps> = ({
   const digit = OPTION_DIGITS[optionIndex];
 
   // Determine state styles
-  let containerStyles = "bg-surface border-border-dim text-text-primary hover:border-border-bright hover:bg-subtle/40";
-  let letterBadgeStyles = "bg-subtle text-text-secondary border-border-dim";
+  let containerStyles = "bg-paper-white border-ash/60 text-carbon-black hover:border-carbon-black hover:bg-mist-gray/40";
+  let letterBadgeStyles = "bg-mist-gray text-slate border-ash/60";
   let statusIcon: React.ReactNode = null;
 
   if (!isSubmitted) {
     if (isSelected) {
       containerStyles =
-        "bg-accent-subtle/40 border-accent-primary text-text-primary ring-1 ring-accent-primary/60 shadow-glow";
-      letterBadgeStyles = "bg-accent-primary text-white border-transparent";
+        "bg-carbon-black text-paper-white border-carbon-black ring-2 ring-carbon-black/20";
+      letterBadgeStyles = "bg-paper-white text-carbon-black border-transparent font-bold";
     }
   } else {
     // Submitted state
     if (isUserPick && isCorrectOption) {
-      // 3. User Picked Correctly
+      // User Picked Correctly
       containerStyles =
-        "bg-success-subtle/60 border-success text-success ring-1 ring-success/40";
-      letterBadgeStyles = "bg-success text-white border-transparent";
-      statusIcon = <CheckCircle2 className="h-5 w-5 text-success shrink-0" />;
+        "bg-mint-chip/60 border-emerald-600 text-carbon-black font-semibold";
+      letterBadgeStyles = "bg-emerald-600 text-white border-transparent";
+      statusIcon = <CheckCircle2 className="h-5 w-5 text-emerald-800 shrink-0" />;
     } else if (isUserPick && !isCorrectOption) {
-      // 4. User Picked Incorrectly
+      // User Picked Incorrectly
       containerStyles =
-        "bg-error-subtle/60 border-error text-error ring-1 ring-error/40";
-      letterBadgeStyles = "bg-error text-white border-transparent";
-      statusIcon = <XCircle className="h-5 w-5 text-error shrink-0" />;
-    } else if (!isUserPick && isCorrectOption) {
-      // 5. Revealed Correct (when user missed)
-      containerStyles =
-        "bg-success-subtle/30 border-success/70 text-success font-medium ring-1 ring-success/30";
-      letterBadgeStyles = "bg-success/20 text-success border-success/40";
-      statusIcon = <Check className="h-4 w-4 text-success shrink-0" />;
-    } else {
+        "bg-red-50 border-red-400 text-red-950 font-medium";
+      letterBadgeStyles = "bg-red-600 text-white border-transparent";
+      statusIcon = <XCircle className="h-5 w-5 text-red-600 shrink-0" />;
+    } else if (!isCorrectOption && !isUserPick) {
       // Other unselected neutral options
-      containerStyles = "bg-surface/60 border-border-dim/50 text-text-tertiary opacity-60";
-      letterBadgeStyles = "bg-subtle/50 text-text-tertiary border-border-dim/40";
+      containerStyles = "bg-mist-gray/40 border-ash/40 text-smoke opacity-60";
+      letterBadgeStyles = "bg-mist-gray text-smoke border-ash/30";
+    } else if (isCorrectOption) {
+      // Revealed Correct (when user missed)
+      containerStyles =
+        "bg-mint-chip/30 border-emerald-500 text-carbon-black font-semibold";
+      letterBadgeStyles = "bg-mint-chip text-carbon-black border-emerald-500";
+      statusIcon = <Check className="h-4 w-4 text-emerald-800 shrink-0" />;
     }
   }
 
@@ -76,14 +76,14 @@ export const QuizOptionItem: React.FC<QuizOptionItemProps> = ({
       disabled={disabled || isSubmitted}
       aria-label={`Option ${letter}: ${optionText}`}
       aria-pressed={isSelected}
-      className={`group relative flex w-full items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl border text-left min-h-[52px] sm:min-h-[56px] select-none transition-all duration-150 ${containerStyles} ${
+      className={`group relative flex w-full items-center justify-between gap-3.5 p-4 rounded-2xl border text-left min-h-[56px] select-none transition-all duration-150 ${containerStyles} ${
         !isSubmitted ? "active:scale-[0.985] cursor-pointer" : "cursor-default"
       }`}
     >
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex items-center gap-3.5 flex-1 min-w-0">
         {/* Letter Indicator (A, B, C, D) */}
         <span
-          className={`flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-lg border font-mono text-xs font-bold transition-colors ${letterBadgeStyles}`}
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border font-mono text-xs font-bold transition-colors ${letterBadgeStyles}`}
         >
           {letter}
         </span>

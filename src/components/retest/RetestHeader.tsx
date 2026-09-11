@@ -20,17 +20,17 @@ export const RetestHeader: React.FC<RetestHeaderProps> = ({
   const isComplete = masteryPercentage === 100;
 
   return (
-    <div className="w-full bg-surface/90 backdrop-blur-md border-b border-border-dim px-4 py-3 sticky top-0 z-20">
-      <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-warning/10 text-warning border border-warning/30">
+    <div className="w-full bg-paper-white/90 backdrop-blur-md border-b border-ash/50 px-6 py-3.5 sticky top-0 z-20">
+      <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-voltage-yellow text-carbon-black border border-voltage-yellow">
             <Target className="w-5 h-5 animate-pulse" />
           </div>
           <div>
-            <div className="text-xs font-semibold tracking-wider text-warning uppercase font-mono">
-              Targeted Recall Mode
+            <div className="text-xs font-bold tracking-wider text-carbon-black uppercase font-mono">
+              Targeted Remediation
             </div>
-            <div className="text-sm font-medium text-text-primary">
+            <div className="text-sm font-medium text-slate">
               Resolving Weak Points
             </div>
           </div>
@@ -38,16 +38,16 @@ export const RetestHeader: React.FC<RetestHeaderProps> = ({
 
         <div className="flex items-center gap-4 flex-1 max-w-xs">
           <div className="w-full">
-            <div className="flex justify-between text-xs text-text-secondary mb-1">
+            <div className="flex justify-between text-xs text-smoke font-mono font-bold mb-1">
               <span>Remediation Progress</span>
-              <span className="font-medium font-mono text-text-primary">
-                {resolvedCount} of {totalInitial} resolved ({masteryPercentage}%)
+              <span className="text-carbon-black">
+                {resolvedCount} of {totalInitial} ({masteryPercentage}%)
               </span>
             </div>
             <Progress
               value={masteryPercentage}
               className="h-2"
-              indicatorColor={isComplete ? "bg-success" : "bg-warning"}
+              indicatorColor={isComplete ? "bg-emerald-600" : "bg-carbon-black"}
             />
           </div>
         </div>
@@ -56,7 +56,7 @@ export const RetestHeader: React.FC<RetestHeaderProps> = ({
           variant="ghost"
           size="icon"
           onClick={onDismiss}
-          className="text-text-tertiary hover:text-text-primary"
+          className="text-smoke hover:text-carbon-black rounded-xl"
           aria-label="Exit remediation"
         >
           <X className="w-5 h-5" />

@@ -154,38 +154,38 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-xl mx-auto p-6 sm:p-8 bg-surface border border-accent-primary/40 rounded-2xl shadow-elevated text-center space-y-6"
+        className="w-full max-w-xl mx-auto p-6 sm:p-8 bg-paper-white border border-ash/50 rounded-[32px] text-center space-y-6"
       >
-        <div className="w-16 h-16 bg-accent-subtle text-accent-primary rounded-2xl flex items-center justify-center mx-auto shadow-glow">
-          <Trophy className="w-8 h-8 text-accent-primary animate-bounce" />
+        <div className="w-16 h-16 bg-carbon-black text-paper-white rounded-2xl flex items-center justify-center mx-auto">
+          <Trophy className="w-8 h-8 text-mint-chip" />
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-carbon-black uppercase">
             Deck Completed!
           </h2>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-slate">
             You have successfully reviewed all cards in{" "}
-            <span className="font-semibold text-text-primary">{deckTitle}</span>.
+            <span className="font-bold text-carbon-black">{deckTitle}</span>.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 py-2">
-          <div className="flex items-center gap-3 bg-success-subtle/50 border border-success/30 p-3.5 rounded-xl text-left">
-            <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
+          <div className="flex items-center gap-3 bg-mint-chip/40 border border-mint-chip p-4 rounded-2xl text-left">
+            <CheckCircle2 className="w-5 h-5 text-emerald-800 shrink-0" />
             <div>
-              <div className="text-[11px] font-mono text-text-tertiary">Mastered</div>
-              <div className="text-lg font-bold font-mono text-success">
+              <div className="text-[11px] font-mono font-bold text-slate uppercase">Mastered</div>
+              <div className="text-xl font-bold font-mono text-carbon-black">
                 {stats.masteredCount}
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 bg-warning/10 border border-warning/30 p-3.5 rounded-xl text-left">
-            <AlertTriangle className="w-5 h-5 text-warning shrink-0" />
+          <div className="flex items-center gap-3 bg-voltage-yellow/30 border border-voltage-yellow p-4 rounded-2xl text-left">
+            <AlertTriangle className="w-5 h-5 text-amber-800 shrink-0" />
             <div>
-              <div className="text-[11px] font-mono text-text-tertiary">Needs Review</div>
-              <div className="text-lg font-bold font-mono text-warning">
+              <div className="text-[11px] font-mono font-bold text-slate uppercase">Needs Review</div>
+              <div className="text-xl font-bold font-mono text-carbon-black">
                 {stats.reviewCount}
               </div>
             </div>
@@ -196,7 +196,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
           <Button
             type="button"
             variant="primary"
-            className="w-full sm:w-auto gap-2"
+            className="w-full sm:w-auto gap-2 rounded-xl"
             onClick={handleReset}
           >
             <RefreshCw className="w-4 h-4" />
@@ -205,7 +205,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
           <Button
             type="button"
             variant="outline"
-            className="w-full sm:w-auto gap-2"
+            className="w-full sm:w-auto gap-2 rounded-xl border-ash hover:border-carbon-black"
             onClick={() => {
               // Filter order to focus solely on cards marked 'needs-review'
               const reviewIndices = cardOrder.filter(
@@ -231,8 +231,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between max-w-xl mx-auto px-1">
         <div className="flex items-center gap-2">
-          <Layers className="h-4 w-4 text-accent-primary" />
-          <h3 className="text-xs font-mono uppercase tracking-wider text-text-tertiary truncate max-w-[280px] sm:max-w-md">
+          <Layers className="h-4 w-4 text-carbon-black" />
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate truncate max-w-[280px] sm:max-w-md">
             {deckTitle}
           </h3>
         </div>

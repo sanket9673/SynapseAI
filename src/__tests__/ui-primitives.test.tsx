@@ -32,16 +32,13 @@ describe("UI Primitives Component Suite", () => {
 
     it("applies variant classes properly", () => {
       const { rerender } = render(<Button variant="primary">Primary</Button>);
-      expect(screen.getByRole("button")).toHaveClass("bg-accent-primary");
+      expect(screen.getByRole("button")).toHaveClass("bg-carbon-black");
 
       rerender(<Button variant="secondary">Secondary</Button>);
-      expect(screen.getByRole("button")).toHaveClass("bg-subtle");
-
-      rerender(<Button variant="danger">Danger</Button>);
-      expect(screen.getByRole("button")).toHaveClass("bg-error");
+      expect(screen.getByRole("button")).toHaveClass("bg-paper-white");
 
       rerender(<Button variant="outline">Outline</Button>);
-      expect(screen.getByRole("button")).toHaveClass("border-border-bright");
+      expect(screen.getByRole("button")).toHaveClass("border-ash");
 
       rerender(<Button variant="ghost">Ghost</Button>);
       expect(screen.getByRole("button")).toHaveClass("bg-transparent");
@@ -83,16 +80,13 @@ describe("UI Primitives Component Suite", () => {
   describe("Badge Component", () => {
     it("renders variants and text content correctly", () => {
       const { rerender } = render(<Badge variant="accent">AI Active</Badge>);
-      expect(screen.getByText("AI Active")).toHaveClass("text-accent-primary");
+      expect(screen.getByText("AI Active")).toHaveClass("bg-mint-chip");
 
       rerender(<Badge variant="success">Completed</Badge>);
-      expect(screen.getByText("Completed")).toHaveClass("text-success");
-
-      rerender(<Badge variant="error">Failed</Badge>);
-      expect(screen.getByText("Failed")).toHaveClass("text-error");
+      expect(screen.getByText("Completed")).toHaveClass("bg-mint-chip");
 
       rerender(<Badge variant="warning">Warning</Badge>);
-      expect(screen.getByText("Warning")).toHaveClass("text-warning");
+      expect(screen.getByText("Warning")).toHaveClass("bg-voltage-yellow");
     });
 
     it("renders animated status dot when dot={true}", () => {

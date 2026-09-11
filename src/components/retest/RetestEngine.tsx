@@ -87,7 +87,7 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
 
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-app text-text-primary flex flex-col">
+      <div className="min-h-screen bg-warm-canvas text-carbon-black flex flex-col">
         <RetestHeader
           resolvedCount={resolvedCount}
           totalInitial={totalInitial}
@@ -106,7 +106,7 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
   const questionTitle = currentQuestion?.question || currentQuestion?.text || "";
 
   return (
-    <div className="min-h-screen bg-app text-text-primary flex flex-col selection:bg-warning/30">
+    <div className="min-h-screen bg-warm-canvas text-carbon-black flex flex-col selection:bg-mint-chip selection:text-carbon-black">
       <RetestHeader
         resolvedCount={resolvedCount}
         totalInitial={totalInitial}
@@ -122,16 +122,16 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
               initial={{ opacity: 0, y: 0, x: "-50%" }}
               animate={{ opacity: 1, y: -30, x: "-50%" }}
               exit={{ opacity: 0, y: -50, x: "-50%" }}
-              className="absolute top-4 left-1/2 z-30 pointer-events-none bg-success text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-lg shadow-success/30 flex items-center gap-1 font-mono"
+              className="absolute top-4 left-1/2 z-30 pointer-events-none bg-mint-chip text-carbon-black font-bold text-xs px-3.5 py-1.5 rounded-[64px] border border-emerald-500 flex items-center gap-1 font-mono"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 text-emerald-800" />
               +1 Mastery Point
             </motion.div>
           )}
         </AnimatePresence>
 
         <div className="mb-4 text-center">
-          <p className="text-xs font-medium text-text-tertiary italic">
+          <p className="text-xs font-mono font-medium text-smoke uppercase tracking-wider">
             &ldquo;Errors are just unencoded memories. Let&apos;s lock them in.&rdquo;
           </p>
         </div>
@@ -145,18 +145,18 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="bg-surface border-warning/40 ring-1 ring-warning/20 shadow-elevated">
+            <Card className="bg-paper-white border border-ash/50 rounded-[32px]">
               <CardContent className="p-6 md:p-8 space-y-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded bg-warning/10 text-warning border border-warning/20 uppercase tracking-wider font-mono">
+                  <span className="text-xs font-bold px-3.5 py-1 rounded-[64px] bg-voltage-yellow text-carbon-black border border-voltage-yellow uppercase tracking-wider font-mono">
                     Targeted Question Review
                   </span>
-                  <span className="text-xs text-text-tertiary font-mono">
+                  <span className="text-xs text-smoke font-mono font-bold">
                     ID: {currentQuestion.id}
                   </span>
                 </div>
 
-                <h3 className="text-lg md:text-xl font-bold text-text-primary leading-snug">
+                <h3 className="text-lg md:text-xl font-bold text-carbon-black leading-snug">
                   {questionTitle}
                 </h3>
 
@@ -169,14 +169,14 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
                     const isCorrectOption = option === correctAnswer;
 
                     let btnStyle =
-                      "bg-subtle/70 border-border-dim hover:border-border-bright text-text-primary";
+                      "bg-mist-gray border-ash/40 hover:border-carbon-black text-carbon-black";
                     if (selectedOption !== null) {
                       if (isCorrectOption) {
                         btnStyle =
-                          "bg-success-subtle/60 border-success text-success ring-1 ring-success/40";
+                          "bg-mint-chip/60 border-emerald-500 text-carbon-black font-semibold";
                       } else if (isSelected && !isCorrectFeedback) {
                         btnStyle =
-                          "bg-error-subtle/60 border-error text-error ring-1 ring-error/40";
+                          "bg-red-50 border-red-400 text-red-950 font-semibold";
                       }
                     }
 
@@ -186,11 +186,11 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
                         type="button"
                         disabled={selectedOption !== null}
                         onClick={() => handleAnswerSubmit(option)}
-                        className={`w-full text-left p-4 rounded-xl border text-sm font-medium transition-all duration-200 min-h-[48px] flex items-center justify-between ${btnStyle}`}
+                        className={`w-full text-left p-4 rounded-2xl border text-sm font-medium transition-all duration-150 min-h-[52px] flex items-center justify-between ${btnStyle}`}
                       >
                         <span>{option}</span>
                         {selectedOption !== null && isCorrectOption && (
-                          <Check className="w-5 h-5 text-success shrink-0" />
+                          <Check className="w-5 h-5 text-emerald-800 shrink-0" />
                         )}
                       </button>
                     );
@@ -201,12 +201,12 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 rounded-xl bg-warning/10 border border-warning/30 text-text-primary text-xs sm:text-sm space-y-1"
+                    className="p-4 rounded-2xl bg-voltage-yellow/20 border border-voltage-yellow text-carbon-black text-xs sm:text-sm space-y-1 font-medium"
                   >
-                    <span className="font-semibold text-warning block">
+                    <span className="font-bold text-carbon-black block font-mono uppercase">
                       Review Explanation:
                     </span>
-                    <p className="text-text-secondary leading-relaxed">
+                    <p className="text-slate leading-relaxed">
                       {currentQuestion.explanation}
                     </p>
                   </motion.div>
@@ -225,31 +225,31 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="bg-surface border-warning/40 ring-1 ring-warning/20 shadow-elevated">
+            <Card className="bg-paper-white border border-ash/50 rounded-[32px]">
               <CardContent className="p-6 md:p-8 flex flex-col items-center text-center space-y-6">
-                <span className="text-xs font-semibold px-2.5 py-1 rounded bg-warning/10 text-warning border border-warning/20 uppercase tracking-wider font-mono">
+                <span className="text-xs font-bold px-3.5 py-1 rounded-[64px] bg-voltage-yellow text-carbon-black border border-voltage-yellow uppercase tracking-wider font-mono">
                   Flagged Flashcard Drill
                 </span>
 
-                <div className="w-full min-h-[160px] p-6 rounded-2xl bg-subtle/60 border border-border-dim flex flex-col items-center justify-center space-y-2">
-                  <span className="text-xs text-text-tertiary uppercase font-mono tracking-wider">
+                <div className="w-full min-h-[160px] p-6 rounded-2xl bg-mist-gray border border-ash/40 flex flex-col items-center justify-center space-y-2">
+                  <span className="text-xs text-smoke uppercase font-mono tracking-wider font-bold">
                     Front
                   </span>
-                  <p className="text-lg font-bold text-text-primary">{currentCard.front}</p>
-                  <div className="w-12 h-0.5 bg-border-dim my-2" />
-                  <span className="text-xs text-text-tertiary uppercase font-mono tracking-wider">
+                  <p className="text-lg font-bold text-carbon-black">{currentCard.front}</p>
+                  <div className="w-12 h-0.5 bg-ash/60 my-2" />
+                  <span className="text-xs text-smoke uppercase font-mono tracking-wider font-bold">
                     Back
                   </span>
-                  <p className="text-base text-success font-medium">{currentCard.back}</p>
+                  <p className="text-base text-carbon-black font-medium">{currentCard.back}</p>
                 </div>
 
                 <Button
                   type="button"
                   variant="primary"
                   onClick={handleCardMastered}
-                  className="w-full min-h-[48px] flex items-center justify-center gap-2 bg-success hover:bg-emerald-600 text-white"
+                  className="w-full min-h-[50px] flex items-center justify-center gap-2 bg-carbon-black hover:bg-slate text-paper-white rounded-xl"
                 >
-                  <Check className="w-5 h-5" />
+                  <Check className="w-5 h-5 text-mint-chip" />
                   <span>I&apos;ve Got It Now (Mark Mastered)</span>
                 </Button>
               </CardContent>

@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { RotateCcw, Bot, Edit3, ShieldAlert } from "lucide-react";
-import { Notice, Button, Badge } from "@/components/ui";
+import { RotateCcw, Bot, Edit3 } from "lucide-react";
+import { Notice, Button } from "@/components/ui";
 
 export interface GenerationErrorProps {
   error: {
@@ -27,24 +27,24 @@ export const GenerationError: React.FC<GenerationErrorProps> = ({
       <Notice
         variant="error"
         title={`Generation Halted [${error.code}]`}
-        className="border-error/40 bg-surface shadow-elevated"
+        className="border border-red-200 bg-paper-white rounded-[32px] p-6 sm:p-8"
       >
-        <div className="space-y-3 pt-1">
-          <p className="text-text-primary text-sm font-medium leading-relaxed">
+        <div className="space-y-4 pt-1">
+          <p className="text-carbon-black text-sm font-semibold leading-relaxed">
             {error.message}
           </p>
 
-          <div className="p-3 rounded-lg bg-subtle/80 border border-border-dim text-xs space-y-1">
-            <span className="font-mono text-text-tertiary uppercase tracking-wider block">
+          <div className="p-4 rounded-2xl bg-mist-gray border border-ash/50 text-xs space-y-1">
+            <span className="font-mono text-smoke uppercase tracking-wider block font-bold">
               Actionable Recommendation:
             </span>
-            <p className="text-text-secondary leading-relaxed">
+            <p className="text-slate leading-relaxed">
               {error.actionableSuggestion}
             </p>
           </div>
 
           {/* Action Button Strip */}
-          <div className="flex flex-wrap items-center gap-2 pt-2">
+          <div className="flex flex-wrap items-center gap-3 pt-2">
             {error.recoverable && (
               <Button
                 size="sm"

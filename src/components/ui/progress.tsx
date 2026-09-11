@@ -22,7 +22,7 @@ export const Progress = React.forwardRef<
       aria-valuemin={0}
       aria-valuemax={100}
       className={cn(
-        "relative h-2 w-full overflow-hidden rounded-full bg-subtle",
+        "relative h-2.5 w-full overflow-hidden rounded-full bg-mist-gray border border-ash/40",
         className
       )}
       {...props}
@@ -30,7 +30,7 @@ export const Progress = React.forwardRef<
       <ProgressPrimitive.Indicator
         className={cn(
           "h-full w-full flex-1 transition-all duration-300 ease-in-out",
-          indicatorColor || "bg-accent-primary"
+          indicatorColor || "bg-carbon-black"
         )}
         style={{
           transform: `translateX(-${100 - safeValue}%)`,

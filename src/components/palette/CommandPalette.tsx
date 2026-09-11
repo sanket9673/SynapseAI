@@ -122,25 +122,25 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{ type: "spring", damping: 25, stiffness: 320 }}
-            className="relative w-full max-w-xl bg-surface border border-border-bright rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col"
+            className="relative w-full max-w-xl bg-paper-white border border-ash/80 rounded-[32px] shadow-2xl z-50 overflow-hidden flex flex-col"
           >
             {/* Search Input Bar */}
-            <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5 border-b border-border-dim bg-surface/90">
-              <Search className="h-4 w-4 text-text-tertiary shrink-0" />
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-ash/40 bg-paper-white">
+              <Search className="h-4 w-4 text-slate shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Type a command or search action..."
-                className="w-full bg-transparent text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none font-medium"
+                className="w-full bg-transparent text-sm text-carbon-black placeholder:text-smoke focus:outline-none font-medium"
               />
               {query.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setQuery("")}
                   aria-label="Clear query"
-                  className="p-1 rounded-md text-text-tertiary hover:text-text-primary"
+                  className="p-1 rounded-md text-smoke hover:text-carbon-black"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -151,10 +151,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             {/* Results Action List */}
             <div
               ref={listRef}
-              className="max-h-[340px] overflow-y-auto p-2 space-y-1 divide-y divide-transparent"
+              className="max-h-[340px] overflow-y-auto p-3 space-y-1 divide-y divide-transparent"
             >
               {filteredActions.length === 0 ? (
-                <div className="py-12 text-center text-xs font-mono text-text-tertiary space-y-1">
+                <div className="py-12 text-center text-xs font-mono text-smoke space-y-1">
                   <div>No matching actions found for &ldquo;{query}&rdquo;</div>
                   <div className="text-[11px] opacity-70">Try searching for &ldquo;deck&rdquo;, &ldquo;quiz&rdquo;, or &ldquo;history&rdquo;</div>
                 </div>
@@ -172,10 +172,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         onClose();
                       }}
                       onMouseEnter={() => setSelectedIndex(idx)}
-                      className={`group flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer select-none transition-colors text-xs ${
+                      className={`group flex items-center justify-between gap-3 px-4 py-3 rounded-2xl cursor-pointer select-none transition-colors text-xs ${
                         isSelected
-                          ? "bg-accent-primary text-white shadow-glow"
-                          : "hover:bg-subtle text-text-primary"
+                          ? "bg-carbon-black text-paper-white"
+                          : "hover:bg-mist-gray text-carbon-black"
                       }`}
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -183,20 +183,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                           className={`p-1.5 rounded-lg shrink-0 ${
                             isSelected
                               ? "bg-white/20 text-white"
-                              : "bg-subtle text-text-secondary border border-border-dim"
+                              : "bg-mist-gray text-slate border border-ash/40"
                           }`}
                         >
                           {action.icon}
                         </span>
 
                         <div className="space-y-0.5 flex-1 min-w-0">
-                          <div className="font-semibold text-sm truncate">
+                          <div className="font-bold text-sm truncate">
                             {action.title}
                           </div>
                           {action.description && (
                             <div
                               className={`text-[11px] truncate ${
-                                isSelected ? "text-white/80" : "text-text-tertiary"
+                                isSelected ? "text-paper-white/80" : "text-smoke"
                               }`}
                             >
                               {action.description}
@@ -207,10 +207,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
                       <div className="flex items-center gap-2 shrink-0">
                         <span
-                          className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded ${
+                          className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-[64px] font-semibold ${
                             isSelected
-                              ? "bg-white/20 text-white"
-                              : "bg-subtle text-text-tertiary border border-border-dim"
+                              ? "bg-paper-white/20 text-paper-white"
+                              : "bg-mist-gray text-slate border border-ash/40"
                           }`}
                         >
                           {action.category}
@@ -237,16 +237,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             </div>
 
             {/* Footer Navigation Hints */}
-            <div className="p-2.5 px-4 border-t border-border-dim bg-subtle/40 flex items-center justify-between text-[11px] font-mono text-text-tertiary">
+            <div className="p-3 px-5 border-t border-ash/40 bg-mist-gray/60 flex items-center justify-between text-[11px] font-mono text-smoke">
               <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1 font-bold text-slate">
                   <ArrowUpDown className="h-3 w-3" /> Navigate
                 </span>
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1 font-bold text-slate">
                   <CornerDownLeft className="h-3 w-3" /> Select
                 </span>
               </div>
-              <span className="text-[10px]">Raycast-Grade Command Palette</span>
+              <span className="text-[10px] uppercase font-bold text-slate">Raycast-Grade Command Palette</span>
             </div>
           </motion.div>
         </div>

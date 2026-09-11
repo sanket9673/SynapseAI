@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, StopCircle, RefreshCw, Layers, Check, Bot, AlertCircle } from "lucide-react";
+import { Sparkles, StopCircle, Layers, Check, Bot } from "lucide-react";
 import { Button, Card, CardContent, Badge, Kbd, Textarea } from "@/components/ui";
 
 export interface PromptInputProps {
@@ -73,16 +73,16 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   };
 
   return (
-    <Card className="border-border-dim bg-surface shadow-elevated transition-all">
-      <CardContent className="p-4 sm:p-6 space-y-4">
+    <Card className="border border-ash/50 bg-paper-white transition-all rounded-[32px]">
+      <CardContent className="p-6 sm:p-8 space-y-6">
         {/* Top bar: Section Title + Sample Pills + Mock Toggle */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-border-dim/60">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-ash/40">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono uppercase tracking-wider text-text-tertiary">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate">
               Source Study Notes
             </span>
-            <Badge variant="neutral" size="sm">
-              AI Engine Ready
+            <Badge variant="accent" size="sm">
+              SYNAPSE-v2.4 // ACTIVE
             </Badge>
           </div>
 
@@ -92,16 +92,16 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               type="button"
               onClick={() => setMockMode(!mockMode)}
               disabled={isLoading || disabled}
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono transition-colors border ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-[64px] text-xs font-mono font-medium transition-colors border ${
                 mockMode
-                  ? "bg-accent-subtle/70 text-accent-primary border-accent-primary/40"
-                  : "bg-subtle text-text-tertiary border-border-dim hover:text-text-secondary"
+                  ? "bg-voltage-yellow text-carbon-black border-voltage-yellow"
+                  : "bg-mist-gray text-slate border-ash/60 hover:text-carbon-black"
               }`}
               title="Toggle offline simulated AI inference without consuming API credits"
             >
-              <Bot className="h-3 w-3" />
+              <Bot className="h-3.5 w-3.5" />
               <span>Offline Mock:</span>
-              <span className={mockMode ? "font-bold text-accent-primary" : "text-text-tertiary"}>
+              <span className={mockMode ? "font-bold text-carbon-black" : "text-slate"}>
                 {mockMode ? "ON" : "OFF"}
               </span>
             </button>
@@ -109,9 +109,9 @@ export const PromptInput: React.FC<PromptInputProps> = ({
         </div>
 
         {/* Sample Pills Row */}
-        <div className="space-y-1.5">
-          <div className="text-[11px] text-text-tertiary font-mono">
-            Quick Load Sample Topics:
+        <div className="space-y-2">
+          <div className="text-[11px] text-slate font-mono font-semibold uppercase tracking-wider">
+            Quick Load Topics:
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {SAMPLE_TOPICS.map((topic) => {
@@ -122,15 +122,15 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                   type="button"
                   onClick={() => handleSelectSample(topic.content)}
                   disabled={isLoading || disabled}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 border ${
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[64px] text-xs font-medium transition-all duration-150 border ${
                     isSelected
-                      ? "bg-accent-subtle text-accent-primary border-accent-primary/50 shadow-glow"
-                      : "bg-subtle/70 hover:bg-subtle text-text-secondary hover:text-text-primary border-border-dim"
+                      ? "bg-carbon-black text-paper-white border-carbon-black"
+                      : "bg-mist-gray hover:bg-ash/40 text-slate hover:text-carbon-black border-ash/40"
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   <Layers className="h-3 w-3" />
                   <span>{topic.title}</span>
-                  {isSelected && <Check className="h-3 w-3 text-accent-primary" />}
+                  {isSelected && <Check className="h-3 w-3 text-mint-chip" />}
                 </button>
               );
             })}
@@ -145,7 +145,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             onKeyDown={handleKeyDown}
             disabled={isLoading || disabled}
             placeholder="Paste your raw lecture notes, textbook excerpt, markdown summary, or research paper passage here..."
-            rows={6}
+            rows={5}
             error={
               isTooShort
                 ? `Minimum ${MIN_CHARS} characters required (${trimmedLength}/${MIN_CHARS})`
@@ -158,18 +158,18 @@ export const PromptInput: React.FC<PromptInputProps> = ({
         </div>
 
         {/* Footer: Stats + Clear Button + Action (Generate / Cancel) */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-1">
           {/* Left info: Character Budget & Shortcut info */}
-          <div className="flex items-center gap-3 text-xs text-text-tertiary">
+          <div className="flex items-center gap-3 text-xs text-smoke font-mono">
             <span
-              className={`font-mono text-xs ${
-                isTooShort || isTooLong ? "text-warning" : "text-text-secondary"
+              className={`text-xs ${
+                isTooShort || isTooLong ? "text-amber-700 font-bold" : "text-slate font-medium"
               }`}
             >
               {trimmedLength.toLocaleString()} / {MAX_CHARS.toLocaleString()} characters
             </span>
 
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-text-tertiary">
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] text-smoke">
               Press <Kbd keys={["⌘", "Enter"]} /> to generate
             </span>
           </div>
@@ -205,7 +205,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 variant="primary"
                 onClick={handleGenerate}
                 disabled={!isValid || disabled}
-                leftIcon={<Sparkles className="h-4 w-4" />}
+                leftIcon={<Sparkles className="h-4 w-4 text-mint-chip" />}
               >
                 Generate Study Set
               </Button>

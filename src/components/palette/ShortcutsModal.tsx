@@ -83,19 +83,19 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 280 }}
-            className="relative w-full max-w-xl bg-surface border border-border-dim rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative w-full max-w-xl bg-paper-white border border-ash/80 rounded-[32px] shadow-2xl z-50 overflow-hidden flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-border-dim bg-surface/90">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-accent-subtle text-accent-primary border border-accent-primary/30">
+            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-ash/40 bg-paper-white">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-mint-chip text-carbon-black border border-mint-chip">
                   <Keyboard className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-text-primary">
+                  <h3 className="text-sm font-bold text-carbon-black uppercase font-mono">
                     Keyboard Shortcuts Reference
                   </h3>
-                  <p className="text-[11px] font-mono text-text-tertiary">
+                  <p className="text-[11px] font-mono text-smoke">
                     Hardware-accelerated sub-300ms navigation
                   </p>
                 </div>
@@ -106,31 +106,31 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
                 variant="ghost"
                 onClick={onClose}
                 aria-label="Close shortcuts modal"
-                className="h-8 w-8 text-text-tertiary hover:text-text-primary"
+                className="h-8 w-8 text-smoke hover:text-carbon-black rounded-lg"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
             {/* Content Sections */}
-            <div className="p-4 sm:p-6 space-y-6 overflow-y-auto flex-1">
+            <div className="p-5 sm:p-6 space-y-6 overflow-y-auto flex-1">
               {SHORTCUT_SECTIONS.map((section) => (
                 <div key={section.title} className="space-y-2.5">
-                  <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-text-tertiary">
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate">
                     {section.icon}
                     <span>{section.title}</span>
                   </div>
 
-                  <div className="space-y-1.5 rounded-xl border border-border-dim bg-subtle/30 p-2 sm:p-3">
+                  <div className="space-y-1.5 rounded-2xl border border-ash/40 bg-mist-gray p-3 sm:p-4">
                     {section.shortcuts.map((shortcut) => (
                       <div
                         key={shortcut.label}
-                        className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-subtle/50 transition-colors text-xs"
+                        className="flex items-center justify-between py-1.5 px-2 rounded-lg text-xs"
                       >
-                        <span className="text-text-secondary">{shortcut.label}</span>
+                        <span className="text-slate font-medium">{shortcut.label}</span>
                         <div className="flex items-center gap-1">
                           {shortcut.keys.map((k) => (
-                            <Kbd key={k} keys={[k]} className="text-[11px]" />
+                            <Kbd key={k} keys={[k]} className="text-[11px] bg-paper-white border-ash text-carbon-black" />
                           ))}
                         </div>
                       </div>
@@ -141,7 +141,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
             </div>
 
             {/* Footer */}
-            <div className="p-3.5 px-5 border-t border-border-dim bg-subtle/40 text-center text-xs text-text-tertiary font-mono">
+            <div className="p-3.5 px-5 border-t border-ash/40 bg-mist-gray/60 text-center text-xs text-smoke font-mono font-medium">
               Press <Kbd keys={["Esc"]} className="text-[10px]" /> or click outside to dismiss
             </div>
           </motion.div>

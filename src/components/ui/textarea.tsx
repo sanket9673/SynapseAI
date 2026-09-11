@@ -23,32 +23,32 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             aria-invalid={!!error}
             aria-describedby={errorId || helperId}
             className={cn(
-              "flex min-h-[100px] w-full rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary",
+              "flex min-h-[120px] w-full rounded-2xl border bg-mist-gray px-4 py-3 text-sm text-carbon-black placeholder:text-smoke",
               "transition-colors duration-150 ease-in-out",
-              "focus-visible:outline-none focus-visible:ring-1",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carbon-black focus-visible:bg-paper-white",
               error
-                ? "border-error focus-visible:border-error focus-visible:ring-error"
-                : "border-border-dim hover:border-border-bright focus-visible:border-accent-primary focus-visible:ring-accent-primary",
+                ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500"
+                : "border-ash/50 hover:border-ash focus-visible:border-carbon-black",
               "disabled:cursor-not-allowed disabled:opacity-50",
               className
             )}
             {...props}
           />
           {shortcutHint && (
-            <div className="pointer-events-none absolute bottom-2.5 right-3 flex items-center">
-              <span className="rounded border border-border-dim bg-subtle/80 px-1.5 py-0.5 font-mono text-[11px] text-text-tertiary shadow-sm backdrop-blur-sm">
+            <div className="pointer-events-none absolute bottom-3 right-3 flex items-center">
+              <span className="rounded-md border border-ash/80 bg-paper-white px-2 py-0.5 font-mono text-[11px] font-semibold text-slate">
                 {shortcutHint}
               </span>
             </div>
           )}
         </div>
-        <div className="flex items-center justify-between px-0.5 text-xs">
+        <div className="flex items-center justify-between px-1 text-xs">
           {error ? (
-            <p id={errorId} className="font-medium text-error" role="alert">
+            <p id={errorId} className="font-medium text-red-600 font-mono" role="alert">
               {error}
             </p>
           ) : helperText ? (
-            <p id={helperId} className="text-text-tertiary">
+            <p id={helperId} className="text-smoke font-mono">
               {helperText}
             </p>
           ) : null}

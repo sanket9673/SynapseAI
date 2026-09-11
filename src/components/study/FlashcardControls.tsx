@@ -27,15 +27,15 @@ export const FlashcardControls: React.FC<FlashcardControlsProps> = ({
     <div className="w-full max-w-xl mx-auto mt-6 space-y-4">
       {/* Progress Bar */}
       <div className="space-y-1.5">
-        <div className="flex justify-between text-xs font-mono text-text-secondary">
+        <div className="flex justify-between text-xs font-mono font-bold text-slate">
           <span>
             Card {currentIndex + 1} of {totalCards}
           </span>
-          <span className="font-semibold text-accent-primary">
+          <span className="text-carbon-black">
             {Math.round(progressValue)}% Completed
           </span>
         </div>
-        <Progress value={progressValue} className="h-2 w-full" />
+        <Progress value={progressValue} className="h-2 w-full" indicatorColor="bg-carbon-black" />
       </div>
 
       {/* Action Toolbar */}
@@ -46,7 +46,7 @@ export const FlashcardControls: React.FC<FlashcardControlsProps> = ({
             variant="outline"
             size="sm"
             onClick={onShuffle}
-            className="text-xs gap-1.5 h-9 px-3"
+            className="text-xs gap-1.5 h-9 px-3 rounded-xl border-ash hover:border-carbon-black"
             title="Shuffle Deck Order"
           >
             <Shuffle className="w-3.5 h-3.5" />
@@ -57,7 +57,7 @@ export const FlashcardControls: React.FC<FlashcardControlsProps> = ({
             variant="outline"
             size="sm"
             onClick={onReset}
-            className="text-xs gap-1.5 h-9 px-3"
+            className="text-xs gap-1.5 h-9 px-3 rounded-xl border-ash hover:border-carbon-black"
             title="Reset Deck Order"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -72,18 +72,18 @@ export const FlashcardControls: React.FC<FlashcardControlsProps> = ({
             size="sm"
             onClick={onPrev}
             disabled={currentIndex === 0}
-            className="text-xs gap-1 h-9 px-3 sm:px-4"
+            className="text-xs gap-1 h-9 px-3 sm:px-4 rounded-xl border-ash hover:border-carbon-black"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Prev</span>
           </Button>
           <Button
             type="button"
-            variant="outline"
+            variant="primary"
             size="sm"
             onClick={onNext}
             disabled={currentIndex === totalCards - 1}
-            className="text-xs gap-1 h-9 px-3 sm:px-4"
+            className="text-xs gap-1 h-9 px-3 sm:px-4 rounded-xl bg-carbon-black text-paper-white hover:bg-slate"
           >
             <span>Next</span>
             <ChevronRight className="w-4 h-4" />
@@ -92,7 +92,7 @@ export const FlashcardControls: React.FC<FlashcardControlsProps> = ({
       </div>
 
       {/* Keyboard Shortcuts Legend Bar */}
-      <div className="flex flex-wrap items-center justify-center gap-3 pt-3 text-[11px] font-mono text-text-tertiary border-t border-border-dim">
+      <div className="flex flex-wrap items-center justify-center gap-3 pt-3 text-[11px] font-mono font-medium text-smoke border-t border-ash/40">
         <span className="inline-flex items-center gap-1">
           <Kbd keys={["Space"]} /> Flip
         </span>

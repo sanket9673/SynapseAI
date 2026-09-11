@@ -157,13 +157,13 @@ export const QuizEngine: React.FC<QuizEngineProps> = ({
         transition={{ duration: 0.15 }}
         className="space-y-6"
       >
-        <Card className="border-border-dim bg-surface shadow-elevated p-6 sm:p-8 space-y-6">
+        <Card className="border border-ash/50 bg-paper-white rounded-[32px] p-6 sm:p-8 space-y-6">
           {/* Question Text */}
           <div className="space-y-2">
-            <span className="text-xs font-mono font-medium text-accent-primary uppercase tracking-wider">
+            <span className="text-xs font-mono font-bold text-slate uppercase tracking-wider">
               Multiple Choice Question
             </span>
-            <h3 className="text-lg sm:text-xl font-bold text-text-primary leading-snug">
+            <h3 className="text-lg sm:text-xl font-bold text-carbon-black leading-snug">
               {currentQuestion.question}
             </h3>
           </div>
@@ -193,8 +193,8 @@ export const QuizEngine: React.FC<QuizEngineProps> = ({
 
           {/* Pre-submit Action Bar */}
           {!isSubmitted && (
-            <div className="flex items-center justify-between pt-4 border-t border-border-dim">
-              <span className="text-[11px] text-text-tertiary hidden sm:inline-flex items-center gap-1.5 font-mono">
+            <div className="flex items-center justify-between pt-4 border-t border-ash/40">
+              <span className="text-[11px] text-smoke hidden sm:inline-flex items-center gap-1.5 font-mono">
                 Select <Kbd keys={["1-4"]} className="text-[10px]" /> & press{" "}
                 <Kbd keys={["Enter ↵"]} className="text-[10px]" /> to confirm
               </span>
@@ -205,7 +205,7 @@ export const QuizEngine: React.FC<QuizEngineProps> = ({
                 variant="primary"
                 onClick={handleSubmit}
                 disabled={selectedOptionIndex === null}
-                className="ml-auto gap-2"
+                className="ml-auto gap-2 rounded-xl"
               >
                 <span>Submit Answer</span>
                 <Send className="h-4 w-4" />

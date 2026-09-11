@@ -17,21 +17,21 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
 }) => {
   const [showHint, setShowHint] = useState(false);
 
-  // Border glow and status styling dependent on mastery status
-  const getBorderGlow = () => {
+  // Border and status styling dependent on mastery status
+  const getBorderStatus = () => {
     if (masteryStatus === "mastered") {
-      return "border-success/60 ring-1 ring-success/30 shadow-[0_0_24px_-4px_rgba(16,185,129,0.25)]";
+      return "border-emerald-500 ring-2 ring-emerald-500/30";
     }
     if (masteryStatus === "needs-review") {
-      return "border-warning/60 ring-1 ring-warning/30 shadow-[0_0_24px_-4px_rgba(245,158,11,0.25)]";
+      return "border-voltage-yellow ring-2 ring-voltage-yellow/40";
     }
-    return "border-border-dim hover:border-border-bright";
+    return "border-ash/60 hover:border-carbon-black";
   };
 
   return (
     <div className="w-full max-w-xl h-80 sm:h-96 mx-auto relative perspective-1000 select-none">
       <motion.div
-        className={`w-full h-full relative cursor-pointer transform-style-3d rounded-2xl bg-surface border transition-all duration-300 shadow-elevated ${getBorderGlow()}`}
+        className={`w-full h-full relative cursor-pointer transform-style-3d rounded-[32px] bg-paper-white border transition-all duration-300 ${getBorderStatus()}`}
         onClick={onFlip}
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ type: "spring", stiffness: 260, damping: 22 }}
@@ -39,30 +39,30 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
         whileTap={{ scale: 0.985 }}
       >
         {/* FRONT FACE */}
-        <div className="absolute inset-0 w-full h-full bg-surface border border-border-dim/60 rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden overflow-y-auto">
+        <div className="absolute inset-0 w-full h-full bg-paper-white rounded-[32px] p-6 sm:p-8 flex flex-col justify-between backface-hidden overflow-y-auto">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Badge variant="neutral" size="sm" className="font-medium font-mono">
+                <Badge variant="accent" size="sm" className="font-semibold font-mono">
                   {card.category || "Active Recall"}
                 </Badge>
                 {masteryStatus === "mastered" && (
-                  <span className="inline-flex items-center gap-1 text-xs text-success font-medium bg-success/10 border border-success/30 px-2.5 py-0.5 rounded-full">
-                    <CheckCircle2 className="w-3 h-3" /> Mastered
+                  <span className="inline-flex items-center gap-1 text-xs text-emerald-800 font-bold bg-mint-chip px-3 py-0.5 rounded-[64px] font-mono">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Mastered
                   </span>
                 )}
                 {masteryStatus === "needs-review" && (
-                  <span className="inline-flex items-center gap-1 text-xs text-warning font-medium bg-warning/10 border border-warning/30 px-2.5 py-0.5 rounded-full">
-                    <AlertTriangle className="w-3 h-3" /> Needs Review
+                  <span className="inline-flex items-center gap-1 text-xs text-carbon-black font-bold bg-voltage-yellow px-3 py-0.5 rounded-[64px] font-mono">
+                    <AlertTriangle className="w-3.5 h-3.5" /> Needs Review
                   </span>
                 )}
               </div>
-              <span className="text-xs text-text-tertiary font-mono">
+              <span className="text-xs text-smoke font-mono font-bold">
                 {cardNumber} / {totalCards}
               </span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary mt-3 leading-snug">
+            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-carbon-black mt-3 leading-snug">
               {card.front}
             </h3>
 
@@ -72,18 +72,18 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowHint(true)}
-                    className="inline-flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary transition-colors py-1.5 px-3 rounded-lg bg-subtle/70 hover:bg-subtle border border-border-dim"
+                    className="inline-flex items-center gap-1.5 text-xs text-slate hover:text-carbon-black transition-colors py-1.5 px-3.5 rounded-[64px] bg-mist-gray hover:bg-ash/40 border border-ash/50 font-mono font-medium"
                   >
-                    <Lightbulb className="w-3.5 h-3.5 text-warning" />
+                    <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
                     <span>Reveal Hint</span>
                   </button>
                 ) : (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="text-xs text-text-secondary bg-subtle/80 border border-border-dim p-3 rounded-lg leading-relaxed"
+                    className="text-xs text-slate bg-mist-gray border border-ash/60 p-4 rounded-2xl leading-relaxed"
                   >
-                    <span className="font-semibold text-text-primary block mb-0.5">
+                    <span className="font-bold text-carbon-black block mb-0.5 font-mono">
                       💡 Pedagogical Hint:
                     </span>
                     {card.hint}
@@ -93,59 +93,59 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-border-dim text-xs text-text-tertiary">
-            <span className="flex items-center gap-1">
-              Click anywhere or press <Kbd keys={["Space"]} /> to flip
+          <div className="flex items-center justify-between pt-4 border-t border-ash/40 text-xs text-smoke font-mono">
+            <span className="flex items-center gap-1.5">
+              Click to flip or press <Kbd keys={["Space"]} />
             </span>
-            <RotateCw className="w-4 h-4 text-text-tertiary/60" />
+            <RotateCw className="w-4 h-4 text-smoke" />
           </div>
         </div>
 
         {/* BACK FACE */}
         <div
-          className="absolute inset-0 w-full h-full bg-surface border border-border-dim/60 rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden rotate-y-180 overflow-y-auto"
+          className="absolute inset-0 w-full h-full bg-paper-white rounded-[32px] p-6 sm:p-8 flex flex-col justify-between backface-hidden rotate-y-180 overflow-y-auto"
           onClick={(e) => e.stopPropagation()} // Stop flip trigger when clicking inside actions
         >
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold tracking-wider text-accent-primary uppercase font-mono">
+              <span className="text-xs font-bold tracking-wider text-carbon-black uppercase font-mono">
                 Explanation & Answer
               </span>
-              <span className="text-xs text-text-tertiary font-mono">
+              <span className="text-xs text-smoke font-mono font-bold">
                 {cardNumber} / {totalCards}
               </span>
             </div>
 
-            <div className="text-base sm:text-lg text-text-primary leading-relaxed mt-2 font-normal">
+            <div className="text-base sm:text-lg text-carbon-black leading-relaxed mt-3 font-normal">
               {card.back}
             </div>
           </div>
 
           {/* Quick Mastery Footer Actions */}
-          <div className="pt-4 border-t border-border-dim">
-            <p className="text-xs text-text-tertiary mb-2 text-center">
+          <div className="pt-4 border-t border-ash/40">
+            <p className="text-xs text-smoke mb-2.5 text-center font-mono font-medium">
               Rate your active recall mastery:
             </p>
             <div className="grid grid-cols-2 gap-3">
               <Button
                 type="button"
                 variant="outline"
-                className="h-11 border-warning/40 hover:bg-warning/10 hover:text-warning text-warning font-medium text-xs sm:text-sm flex items-center justify-center gap-2"
+                className="h-11 border-ash hover:border-carbon-black hover:bg-voltage-yellow/30 text-carbon-black font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 rounded-xl"
                 onClick={() => onSetMastery("needs-review")}
               >
-                <AlertTriangle className="w-4 h-4" />
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
                 <span>Needs Review</span>
                 <Kbd keys={["R"]} className="ml-auto text-[10px]" />
               </Button>
               <Button
                 type="button"
-                variant="secondary"
-                className="h-11 bg-success/10 hover:bg-success/20 text-success border border-success/30 font-medium text-xs sm:text-sm flex items-center justify-center gap-2"
+                variant="primary"
+                className="h-11 bg-carbon-black hover:bg-slate text-paper-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 rounded-xl"
                 onClick={() => onSetMastery("mastered")}
               >
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 text-mint-chip" />
                 <span>Got It / Mastered</span>
-                <Kbd keys={["M"]} className="ml-auto text-[10px]" />
+                <Kbd keys={["M"]} className="ml-auto text-[10px] text-carbon-black bg-paper-white border-none" />
               </Button>
             </div>
           </div>

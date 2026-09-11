@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Trash2, Clock, Layers, HelpCircle, Check } from "lucide-react";
+import { Trash2, Clock, Layers, HelpCircle } from "lucide-react";
 import type { PersistedDeckMetadata } from "@/lib/storage";
-import { Badge, Button } from "@/components/ui";
+import { Badge } from "@/components/ui";
 
 export interface DeckHistoryItemProps {
   deck: PersistedDeckMetadata;
@@ -51,40 +51,40 @@ export const DeckHistoryItem: React.FC<DeckHistoryItemProps> = ({
           onSelect(deck.id);
         }
       }}
-      className={`group relative p-4 rounded-xl border transition-all duration-150 cursor-pointer text-left select-none ${
+      className={`group relative p-4 rounded-2xl border transition-all duration-150 cursor-pointer text-left select-none ${
         isActive
-          ? "bg-accent-subtle/50 border-accent-primary/60 ring-1 ring-accent-primary/40 shadow-glow"
-          : "bg-surface hover:bg-subtle/60 border-border-dim hover:border-border-bright"
+          ? "bg-mist-gray border-carbon-black ring-1 ring-carbon-black"
+          : "bg-paper-white hover:bg-mist-gray border-ash"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1.5 flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="text-sm font-bold text-text-primary truncate max-w-[220px]">
+            <h4 className="text-sm font-bold text-carbon-black truncate max-w-[220px]">
               {deck.title}
             </h4>
             {isActive && (
-              <Badge variant="accent" size="sm" dot>
+              <Badge variant="mint" size="sm" dot>
                 Active
               </Badge>
             )}
           </div>
 
           {deck.summary && (
-            <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
+            <p className="text-xs text-slate line-clamp-2 leading-relaxed">
               {deck.summary}
             </p>
           )}
 
           {/* Counts and Time */}
-          <div className="flex items-center gap-3 pt-1 text-[11px] font-mono text-text-tertiary">
+          <div className="flex items-center gap-3 pt-1 text-[11px] font-mono text-smoke">
             <span className="flex items-center gap-1">
-              <Layers className="h-3 w-3 text-accent-primary" />
+              <Layers className="h-3 w-3 text-carbon-black" />
               {deck.cardCount} cards
             </span>
 
             <span className="flex items-center gap-1">
-              <HelpCircle className="h-3 w-3 text-success" />
+              <HelpCircle className="h-3 w-3 text-carbon-black" />
               {deck.quizCount} quiz
             </span>
 
@@ -100,7 +100,7 @@ export const DeckHistoryItem: React.FC<DeckHistoryItemProps> = ({
           type="button"
           onClick={handleDelete}
           aria-label={`Delete deck ${deck.title}`}
-          className="opacity-40 group-hover:opacity-100 hover:text-error p-1.5 rounded-lg hover:bg-surface transition-all shrink-0"
+          className="opacity-40 group-hover:opacity-100 hover:text-carbon-black p-1.5 rounded-lg hover:bg-ash/30 transition-all shrink-0 text-slate"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -108,3 +108,4 @@ export const DeckHistoryItem: React.FC<DeckHistoryItemProps> = ({
     </div>
   );
 };
+

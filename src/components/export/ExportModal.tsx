@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Download, Copy, Check, X, FileCode } from "lucide-react";
 import type { StudySet } from "@/types/study";
 import { formatAsMarkdown, formatAsAnkiTSV, downloadFile } from "@/lib/export-utils";
-import { Button, Card, Badge } from "@/components/ui";
+import { Button, Badge } from "@/components/ui";
 
 export interface ExportModalProps {
   isOpen: boolean;
@@ -61,35 +61,35 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, deck 
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
-          {/* Backdrop Blur */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+            className="fixed inset-0 bg-carbon-black/60 backdrop-blur-sm"
           />
 
           {/* Modal Card Dialog */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ type: "spring", damping: 25, stiffness: 280 }}
-            className="relative w-full max-w-2xl bg-surface border border-border-dim rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[85vh]"
+            className="relative w-full max-w-2xl bg-paper-white border border-ash rounded-[32px] z-50 overflow-hidden flex flex-col max-h-[85vh]"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border-dim">
+            <div className="flex items-center justify-between p-6 border-b border-ash">
               <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-base sm:text-lg font-bold text-text-primary">
+                <div className="flex items-center gap-2.5">
+                  <h3 className="text-lg font-bold uppercase tracking-tight text-carbon-black">
                     Export Study Deck
                   </h3>
-                  <Badge variant="accent" size="sm">
+                  <Badge variant="mint" size="sm">
                     {deck.flashcards?.length || 0} Cards
                   </Badge>
                 </div>
-                <p className="text-xs text-text-secondary truncate max-w-md">
+                <p className="text-xs text-slate truncate max-w-md">
                   {deck.title}
                 </p>
               </div>
@@ -99,22 +99,22 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, deck 
                 variant="ghost"
                 onClick={onClose}
                 aria-label="Close export dialog"
-                className="h-8 w-8 text-text-tertiary hover:text-text-primary"
+                className="h-8 w-8 text-smoke hover:text-carbon-black"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
             {/* Tab Selector & Controls */}
-            <div className="px-4 sm:px-6 pt-4 pb-2 flex items-center justify-between border-b border-border-dim bg-subtle/30">
+            <div className="px-6 py-3.5 flex items-center justify-between border-b border-ash bg-mist-gray">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setActiveTab("markdown")}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all select-none ${
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-[48px] text-xs font-bold uppercase transition-all select-none ${
                     activeTab === "markdown"
-                      ? "bg-accent-primary text-white shadow-glow"
-                      : "text-text-secondary hover:text-text-primary hover:bg-subtle"
+                      ? "bg-carbon-black text-paper-white"
+                      : "text-slate hover:text-carbon-black hover:bg-ash/30"
                   }`}
                 >
                   <FileText className="h-3.5 w-3.5" />
@@ -124,10 +124,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, deck 
                 <button
                   type="button"
                   onClick={() => setActiveTab("anki")}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all select-none ${
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-[48px] text-xs font-bold uppercase transition-all select-none ${
                     activeTab === "anki"
-                      ? "bg-accent-primary text-white shadow-glow"
-                      : "text-text-secondary hover:text-text-primary hover:bg-subtle"
+                      ? "bg-carbon-black text-paper-white"
+                      : "text-slate hover:text-carbon-black hover:bg-ash/30"
                   }`}
                 >
                   <FileCode className="h-3.5 w-3.5" />
@@ -135,7 +135,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, deck 
                 </button>
               </div>
 
-              <span className="text-[11px] font-mono text-text-tertiary hidden sm:inline">
+              <span className="text-[11px] font-mono text-smoke hidden sm:inline">
                 {activeTab === "markdown"
                   ? "Standard GitHub Markdown"
                   : "Anki-compatible TSV"}
@@ -143,34 +143,34 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, deck 
             </div>
 
             {/* Content Preview Box */}
-            <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
-              <pre className="p-4 rounded-xl bg-app border border-border-dim text-xs font-mono text-text-secondary overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-72">
+            <div className="p-6 flex-1 overflow-y-auto bg-warm-canvas/20">
+              <pre className="p-4 rounded-2xl bg-paper-white border border-ash text-xs font-mono text-slate overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-72 select-text">
                 {activeContent}
               </pre>
             </div>
 
             {/* Footer Action Buttons */}
-            <div className="p-4 sm:p-6 border-t border-border-dim bg-surface/90 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <span className="text-xs text-text-tertiary">
+            <div className="p-6 border-t border-ash bg-paper-white flex flex-col sm:flex-row items-center justify-between gap-3">
+              <span className="text-xs text-smoke">
                 {activeTab === "markdown"
                   ? "Formatted for Obsidian, Notion & GitHub."
                   : "Import directly into Anki Desktop via File > Import."}
               </span>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
                 <Button
                   variant="outline"
                   size="md"
                   onClick={handleCopy}
                   className={`min-w-[120px] transition-all gap-1.5 ${
                     isCopied
-                      ? "bg-success text-white border-success hover:bg-success hover:border-success shadow-glow scale-[1.03]"
+                      ? "bg-mint-chip text-carbon-black border-carbon-black"
                       : ""
                   }`}
                 >
                   {isCopied ? (
                     <>
-                      <Check className="h-4 w-4" />
+                      <Check className="h-4 w-4 text-carbon-black" />
                       <span>Copied!</span>
                     </>
                   ) : (
@@ -198,3 +198,4 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, deck 
     </AnimatePresence>
   );
 };
+

@@ -3,18 +3,20 @@ import { cn } from "@/lib/utils";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   glow?: boolean;
+  inverted?: boolean;
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, glow = false, children, ...props }, ref) => {
+  ({ className, glow = false, inverted = false, children, ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={cn(
-          "rounded-xl border bg-surface text-text-primary shadow-elevated transition-all duration-200",
-          glow
-            ? "border-accent-primary/50 shadow-[0_0_30px_-5px_rgba(99,102,241,0.2)]"
-            : "border-border-dim hover:border-border-bright",
+          "rounded-[32px] transition-all duration-200",
+          inverted
+            ? "bg-carbon-black text-paper-white border-none"
+            : "bg-paper-white text-carbon-black border border-ash/50",
+          glow && !inverted && "ring-2 ring-mint-chip border-carbon-black/20",
           className
         )}
         {...props}
@@ -32,7 +34,7 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex flex-col space-y-1.5 p-6", className)}
+      className={cn("flex flex-col space-y-2 p-6 sm:p-8", className)}
       {...props}
     />
   )
@@ -45,7 +47,7 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className, children, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn("text-lg font-semibold leading-none tracking-tight text-text-primary", className)}
+      className={cn("text-xl sm:text-2xl font-bold tracking-tight text-carbon-black", className)}
       {...props}
     >
       {children}
@@ -60,7 +62,7 @@ export const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescri
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn("text-sm text-text-secondary", className)}
+      className={cn("text-sm text-slate leading-relaxed", className)}
       {...props}
     />
   )
@@ -71,7 +73,7 @@ export interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+    <div ref={ref} className={cn("p-6 sm:p-8 pt-0", className)} {...props} />
   )
 );
 CardContent.displayName = "CardContent";
@@ -82,7 +84,7 @@ export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex items-center p-6 pt-0 border-t border-border-dim mt-4 pt-4", className)}
+      className={cn("flex items-center p-6 sm:p-8 pt-0 border-t border-ash/40 mt-4 pt-4", className)}
       {...props}
     />
   )

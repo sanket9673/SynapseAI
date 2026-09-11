@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   Brain,
-  Sparkles,
   Layers,
   HelpCircle,
   Clock,
@@ -11,12 +10,8 @@ import {
   ChevronDown,
   ChevronUp,
   RotateCcw,
-  CheckCircle2,
-  BookOpen,
-  ArrowRight,
   Target,
   History,
-  Download,
   Share2,
   Volume2,
   VolumeX,
@@ -30,7 +25,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
   Badge,
   Kbd,
 } from "@/components/ui";
@@ -169,7 +163,7 @@ export default function SynapseHomePage() {
         description: "Switch to 3D active recall flashcard deck",
         category: "Navigation",
         shortcut: ["1"],
-        icon: <Layers className="w-4 h-4 text-accent-primary" />,
+        icon: <Layers className="w-4 h-4 text-carbon-black" />,
         perform: () => {
           setActiveMode("study");
           setActiveTab("flashcards");
@@ -182,7 +176,7 @@ export default function SynapseHomePage() {
         description: "Switch to 4-option multiple choice assessment",
         category: "Navigation",
         shortcut: ["2"],
-        icon: <HelpCircle className="w-4 h-4 text-success" />,
+        icon: <HelpCircle className="w-4 h-4 text-carbon-black" />,
         perform: () => {
           setActiveMode("study");
           setActiveTab("quiz");
@@ -195,7 +189,7 @@ export default function SynapseHomePage() {
         description: "Isolate missed quiz questions and weak flashcards",
         category: "Study",
         shortcut: ["3"],
-        icon: <Target className="w-4 h-4 text-warning" />,
+        icon: <Target className="w-4 h-4 text-carbon-black" />,
         perform: () => {
           setActiveMode("retest");
         },
@@ -207,7 +201,7 @@ export default function SynapseHomePage() {
         description: "Reset active session and return to prompt input",
         category: "Actions",
         shortcut: ["⌘", "N"],
-        icon: <RotateCcw className="w-4 h-4 text-text-primary" />,
+        icon: <RotateCcw className="w-4 h-4 text-carbon-black" />,
         perform: () => {
           reset();
           setActiveMode("study");
@@ -220,7 +214,7 @@ export default function SynapseHomePage() {
         description: "Browse and restore previously generated decks",
         category: "Actions",
         shortcut: ["⌘", "H"],
-        icon: <History className="w-4 h-4 text-accent-primary" />,
+        icon: <History className="w-4 h-4 text-carbon-black" />,
         perform: () => {
           setIsHistoryOpen(true);
         },
@@ -232,7 +226,7 @@ export default function SynapseHomePage() {
         description: "Export current cards to Markdown or Anki TSV format",
         category: "Actions",
         shortcut: ["⌘", "E"],
-        icon: <Share2 className="w-4 h-4 text-success" />,
+        icon: <Share2 className="w-4 h-4 text-carbon-black" />,
         perform: () => {
           if (data) {
             setIsExportOpen(true);
@@ -246,9 +240,9 @@ export default function SynapseHomePage() {
         description: isMuted ? "Enable procedural Web Audio cues" : "Disable tactile Web Audio cues",
         category: "Preferences",
         icon: isMuted ? (
-          <VolumeX className="w-4 h-4 text-text-tertiary" />
+          <VolumeX className="w-4 h-4 text-smoke" />
         ) : (
-          <Volume2 className="w-4 h-4 text-accent-primary" />
+          <Volume2 className="w-4 h-4 text-carbon-black" />
         ),
         perform: () => {
           handleToggleMute();
@@ -261,7 +255,7 @@ export default function SynapseHomePage() {
         description: "Display the hotkeys HUD legend",
         category: "Preferences",
         shortcut: ["?"],
-        icon: <Keyboard className="w-4 h-4 text-text-secondary" />,
+        icon: <Keyboard className="w-4 h-4 text-carbon-black" />,
         perform: () => {
           setIsShortcutsOpen(true);
         },
@@ -273,42 +267,51 @@ export default function SynapseHomePage() {
   }, [data, isMuted, reset]);
 
   return (
-    <div className="min-h-screen bg-app text-text-primary selection:bg-accent-primary/30 selection:text-white pb-24">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-app/80 border-b border-border-dim px-4 sm:px-8 py-3.5 flex items-center justify-between">
+    <div className="min-h-screen bg-warm-canvas text-carbon-black pb-24 px-4 sm:px-6">
+      {/* Floating Top Navigation Pill Bar */}
+      <header className="sticky top-4 sm:top-6 z-40 max-w-[1200px] mx-auto bg-paper-white border border-ash rounded-[48px] px-6 sm:px-8 py-3.5 flex items-center justify-between transition-all">
+        {/* Brand Logo & Tag */}
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-accent-primary to-indigo-400 flex items-center justify-center shadow-glow">
-            <Brain className="h-5 w-5 text-white" />
+          <div className="h-9 w-9 rounded-2xl bg-carbon-black text-paper-white flex items-center justify-center">
+            <Brain className="h-5 w-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-base sm:text-lg tracking-tight text-white">
-                SYNAPSE
-              </span>
-              <Badge variant="accent" size="sm" dot>
-                AI Study Assistant
-              </Badge>
-            </div>
-            <p className="text-[11px] text-text-tertiary font-mono hidden sm:block">
-              AI-Native Active Recall & Pedagogical Synthesis Engine
-            </p>
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-base sm:text-lg tracking-tight uppercase text-carbon-black">
+              SYNAPSE
+            </span>
+            <Badge variant="mint" size="sm" className="hidden sm:inline-flex">
+              v2.4 // ACTIVE
+            </Badge>
           </div>
         </div>
 
+        {/* Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Targeted Remediation Mode Badge Trigger */}
           {totalWeakPoints > 0 && status === "success" && (
             <button
               type="button"
               onClick={() => setActiveMode(activeMode === "retest" ? "study" : "retest")}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/10 hover:bg-warning/20 border border-warning/30 text-warning text-xs font-mono font-medium transition-colors cursor-pointer shadow-subtle"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-[64px] bg-voltage-yellow text-carbon-black text-xs font-mono font-bold uppercase transition-colors cursor-pointer border border-carbon-black"
             >
-              <Target className="w-3.5 h-3.5 animate-pulse text-warning" />
+              <Target className="w-3.5 h-3.5 animate-pulse text-carbon-black" />
               <span>
-                Focus Mode: {totalWeakPoints} {totalWeakPoints === 1 ? "item" : "items"}
+                Focus: {totalWeakPoints} {totalWeakPoints === 1 ? "item" : "items"}
               </span>
             </button>
           )}
+
+          {/* Quick Command Palette Search Button */}
+          <button
+            type="button"
+            onClick={() => setIsPaletteOpen(true)}
+            className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-[48px] border border-ash bg-mist-gray hover:bg-ash/30 text-xs text-slate hover:text-carbon-black transition-all font-mono"
+            title="Open Command Palette (⌘K)"
+          >
+            <Search className="h-3.5 w-3.5 text-smoke" />
+            <span>Search</span>
+            <Kbd keys={["⌘K"]} className="text-[10px] py-0 px-1.5 bg-paper-white text-carbon-black" />
+          </button>
 
           {/* Audio Sound Effects Toggle */}
           <button
@@ -316,25 +319,13 @@ export default function SynapseHomePage() {
             onClick={handleToggleMute}
             aria-label={isMuted ? "Unmute audio effects" : "Mute audio effects"}
             title={isMuted ? "Audio muted (Click to enable sound)" : "Audio active (Click to mute)"}
-            className={`p-2 rounded-lg border transition-colors ${
+            className={`p-2 rounded-full border transition-colors ${
               isMuted
-                ? "border-border-dim text-text-tertiary hover:text-text-secondary hover:bg-subtle/50"
-                : "border-accent-primary/40 bg-accent-subtle/50 text-accent-primary hover:bg-accent-subtle"
+                ? "border-ash text-smoke hover:text-carbon-black hover:bg-mist-gray"
+                : "border-carbon-black bg-carbon-black text-paper-white hover:bg-carbon-black/80"
             }`}
           >
             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
-
-          {/* Quick Command Palette Search Button */}
-          <button
-            type="button"
-            onClick={() => setIsPaletteOpen(true)}
-            className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-border-dim hover:border-border-bright bg-surface hover:bg-subtle text-xs text-text-secondary hover:text-text-primary transition-all font-mono shadow-subtle"
-            title="Open Command Palette (⌘K)"
-          >
-            <Search className="h-3.5 w-3.5 text-text-tertiary" />
-            <span>Search</span>
-            <Kbd keys={["⌘K"]} className="text-[10px] py-0 px-1.5" />
           </button>
 
           {/* History Drawer Trigger Button */}
@@ -343,11 +334,11 @@ export default function SynapseHomePage() {
             variant="outline"
             onClick={() => setIsHistoryOpen(true)}
             leftIcon={<History className="h-3.5 w-3.5" />}
-            className="gap-1.5"
+            className="rounded-[48px] gap-1.5"
           >
             <span className="hidden sm:inline">History</span>
             {historyCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-accent-subtle text-accent-primary font-mono text-[10px] font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-mint-chip text-carbon-black font-mono text-[10px] font-bold">
                 {historyCount}
               </span>
             )}
@@ -357,9 +348,10 @@ export default function SynapseHomePage() {
           {status === "success" && data && (
             <Button
               size="sm"
-              variant="secondary"
+              variant="primary"
               onClick={() => setIsExportOpen(true)}
               leftIcon={<Share2 className="h-3.5 w-3.5" />}
+              className="rounded-[48px]"
             >
               <span className="hidden sm:inline">Export</span>
             </Button>
@@ -371,15 +363,15 @@ export default function SynapseHomePage() {
             onClick={() => setIsShortcutsOpen(true)}
             aria-label="Keyboard Shortcuts"
             title="Keyboard Shortcuts (?)"
-            className="p-2 rounded-lg border border-border-dim hover:border-border-bright bg-surface hover:bg-subtle text-text-tertiary hover:text-text-primary transition-colors"
+            className="p-2 rounded-full border border-ash bg-paper-white hover:bg-mist-gray text-slate hover:text-carbon-black transition-colors"
           >
             <Keyboard className="h-4 w-4" />
           </button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 space-y-8">
+      {/* Main Content Area */}
+      <main className="max-w-[1200px] mx-auto pt-10 sm:pt-16 space-y-16 sm:space-y-20">
         {/* If Retest Mode is Active */}
         {activeMode === "retest" && data ? (
           <RetestEngine
@@ -396,31 +388,49 @@ export default function SynapseHomePage() {
           />
         ) : (
           <>
-            {/* Hero Banner */}
-            <section className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-border-dim text-xs font-mono text-accent-primary shadow-subtle">
-                <Sparkles className="h-3.5 w-3.5 text-accent-primary" />
-                <span>Active Recall & Spaced Repetition Engine</span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-text-primary">
-                Transform Raw Knowledge into Permanent Memory.
-              </h1>
-              <p className="text-text-secondary text-sm sm:text-base max-w-2xl leading-relaxed">
-                Paste notes, transcripts, or complex topics below. Synapse synthesizes high-retention flashcards and pedagogical quiz questions in seconds.
-              </p>
-            </section>
+            {/* HERO SECTION — Editorial Brutalist Split Layout */}
+            <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+              {/* Left Column: Massive Editorial Heading */}
+              <div className="lg:col-span-6 space-y-6 pt-2">
+                <div className="inline-flex items-center gap-2">
+                  <Badge variant="mint" size="md">
+                    ACTIVE RECALL // AI DECK SYNTHESIZER
+                  </Badge>
+                </div>
 
-            {/* Prompt Input Area */}
-            <section>
-              <PromptInput
-                onGenerate={handleGenerate}
-                onCancel={cancel}
-                isLoading={status === "loading"}
-              />
+                <h1 className="text-5xl sm:text-7xl lg:text-[80px] font-extrabold tracking-tight uppercase leading-[0.9] text-carbon-black font-display">
+                  ACTIVE RECALL. <br />
+                  EVOLVED.
+                </h1>
+
+                <p className="text-slate text-base sm:text-lg leading-relaxed max-w-lg">
+                  Transform raw knowledge into permanent memory. Paste notes, transcripts, or complex topics below. Synapse synthesizes high-retention 3D flashcards and pedagogical quiz assessments in seconds.
+                </p>
+
+                {/* Micro Keybindings hint */}
+                <div className="flex items-center gap-3 pt-2 text-xs font-mono text-smoke">
+                  <span className="flex items-center gap-1.5">
+                    <Kbd keys={["⌘K"]} /> Command Palette
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1.5">
+                    <Kbd keys={["?"]} /> Shortcuts HUD
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Column: Brutalist Prompt Input Card */}
+              <div className="lg:col-span-6">
+                <PromptInput
+                  onGenerate={handleGenerate}
+                  onCancel={cancel}
+                  isLoading={status === "loading"}
+                />
+              </div>
             </section>
 
             {/* Dynamic Workspace Container */}
-            <section className="space-y-6">
+            <section className="space-y-8">
               {/* 1. LOADING STATE */}
               {status === "loading" && (
                 <GenerationSkeleton step={currentStep} onCancel={cancel} />
@@ -440,12 +450,12 @@ export default function SynapseHomePage() {
               {status === "success" && data && (
                 <div className="space-y-8 animate-in fade-in duration-300">
                   {/* Deck Summary Card */}
-                  <Card glow className="border-accent-primary/40 bg-surface shadow-elevated">
-                    <CardHeader>
+                  <Card className="border border-ash bg-paper-white rounded-[32px] p-6 sm:p-8">
+                    <CardHeader className="p-0 pb-6 border-b border-ash">
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <Badge variant="success" dot size="sm">
+                            <Badge variant="mint" dot size="sm">
                               Deck Synthesized
                             </Badge>
                             {meta && (
@@ -461,7 +471,7 @@ export default function SynapseHomePage() {
                               </>
                             )}
                           </div>
-                          <CardTitle className="text-xl sm:text-2xl text-white">
+                          <CardTitle className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-carbon-black font-display">
                             {data.title}
                           </CardTitle>
                         </div>
@@ -485,14 +495,14 @@ export default function SynapseHomePage() {
                           </Button>
                         </div>
                       </div>
-                      <CardDescription className="text-text-secondary text-sm pt-2 leading-relaxed">
+                      <CardDescription className="text-slate text-sm sm:text-base pt-3 leading-relaxed">
                         {data.summary}
                       </CardDescription>
                     </CardHeader>
 
-                    <CardContent className="space-y-6 pt-0">
-                      {/* Mode Tab Switcher */}
-                      <div className="border-b border-border-dim pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <CardContent className="p-0 pt-6 space-y-6">
+                      {/* Mode Tab Switcher & Weak Point Button */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-ash pb-6">
                         <StudyTabs
                           activeTab={activeTab}
                           onTabChange={setActiveTab}
@@ -505,7 +515,7 @@ export default function SynapseHomePage() {
                             size="sm"
                             variant="outline"
                             onClick={() => setActiveMode("retest")}
-                            className="border-warning/40 text-warning hover:bg-warning/10 gap-2 self-start sm:self-auto"
+                            className="border-carbon-black bg-voltage-yellow text-carbon-black hover:bg-voltage-yellow/90 gap-2 self-start sm:self-auto rounded-[64px]"
                           >
                             <Target className="w-3.5 h-3.5" />
                             <span>Remediate Weak Points ({totalWeakPoints})</span>
@@ -560,11 +570,11 @@ export default function SynapseHomePage() {
                       )}
 
                       {/* Developer Raw JSON Inspector */}
-                      <div className="pt-4 border-t border-border-dim">
+                      <div className="pt-4 border-t border-ash">
                         <button
                           type="button"
                           onClick={() => setRawPayloadOpen(!rawPayloadOpen)}
-                          className="flex items-center justify-between w-full text-xs font-mono text-text-tertiary hover:text-text-primary py-2 transition-colors"
+                          className="flex items-center justify-between w-full text-xs font-mono text-smoke hover:text-carbon-black py-2 transition-colors"
                         >
                           <span>[Developer Mode] Inspect Raw AI Response Payload</span>
                           {rawPayloadOpen ? (
@@ -575,7 +585,7 @@ export default function SynapseHomePage() {
                         </button>
 
                         {rawPayloadOpen && (
-                          <pre className="mt-2 p-4 rounded-lg bg-app border border-border-dim text-[11px] font-mono text-text-secondary overflow-x-auto max-h-80">
+                          <pre className="mt-2 p-4 rounded-2xl bg-mist-gray border border-ash text-[11px] font-mono text-slate overflow-x-auto max-h-80 select-text">
                             {JSON.stringify(
                               {
                                 data,
@@ -594,42 +604,51 @@ export default function SynapseHomePage() {
 
               {/* 4. IDLE STATE ONBOARDING */}
               {status === "idle" && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                  <Card className="border-border-dim bg-surface p-5 space-y-2.5">
-                    <div className="h-8 w-8 rounded-lg bg-accent-subtle text-accent-primary flex items-center justify-center">
-                      <Layers className="h-4 w-4" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                  <div className="rounded-[32px] border border-ash bg-paper-white p-6 sm:p-8 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="h-10 w-10 rounded-2xl bg-carbon-black text-paper-white flex items-center justify-center">
+                        <Layers className="h-5 w-5" />
+                      </div>
+                      <span className="text-xs font-mono text-smoke font-bold">01 // CONCEPTS</span>
                     </div>
-                    <h3 className="text-sm font-semibold text-text-primary">
-                      1. Atomic Concept Flashcards
+                    <h3 className="text-lg font-bold uppercase tracking-tight text-carbon-black">
+                      Atomic Concept Flashcards
                     </h3>
-                    <p className="text-xs text-text-secondary leading-relaxed">
+                    <p className="text-sm text-slate leading-relaxed">
                       Extracts core themes into single-concept question-and-answer pairs with progressive hints and 3D flip physics.
                     </p>
-                  </Card>
+                  </div>
 
-                  <Card className="border-border-dim bg-surface p-5 space-y-2.5">
-                    <div className="h-8 w-8 rounded-lg bg-success-subtle text-success flex items-center justify-center">
-                      <HelpCircle className="h-4 w-4" />
+                  <div className="rounded-[32px] border border-ash bg-paper-white p-6 sm:p-8 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="h-10 w-10 rounded-2xl bg-mint-chip text-carbon-black flex items-center justify-center">
+                        <HelpCircle className="h-5 w-5" />
+                      </div>
+                      <span className="text-xs font-mono text-smoke font-bold">02 // ASSESSMENT</span>
                     </div>
-                    <h3 className="text-sm font-semibold text-text-primary">
-                      2. 4-Option Multiple Choice
+                    <h3 className="text-lg font-bold uppercase tracking-tight text-carbon-black">
+                      4-Option Multiple Choice
                     </h3>
-                    <p className="text-xs text-text-secondary leading-relaxed">
+                    <p className="text-sm text-slate leading-relaxed">
                       Generates rigorous distractor options and pedagogical rationale explanations for deeper comprehension.
                     </p>
-                  </Card>
+                  </div>
 
-                  <Card className="border-border-dim bg-surface p-5 space-y-2.5">
-                    <div className="h-8 w-8 rounded-lg bg-warning/10 text-warning flex items-center justify-center">
-                      <Clock className="h-4 w-4" />
+                  <div className="rounded-[32px] border border-ash bg-paper-white p-6 sm:p-8 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="h-10 w-10 rounded-2xl bg-voltage-yellow text-carbon-black flex items-center justify-center">
+                        <Clock className="h-5 w-5" />
+                      </div>
+                      <span className="text-xs font-mono text-smoke font-bold">03 // REMEDIATION</span>
                     </div>
-                    <h3 className="text-sm font-semibold text-text-primary">
-                      3. Weakness Remediation
+                    <h3 className="text-lg font-bold uppercase tracking-tight text-carbon-black">
+                      Weakness Remediation
                     </h3>
-                    <p className="text-xs text-text-secondary leading-relaxed">
+                    <p className="text-sm text-slate leading-relaxed">
                       Automatically isolates missed quiz items and flagged flashcards for focused re-testing until 100% mastery.
                     </p>
-                  </Card>
+                  </div>
                 </div>
               )}
             </section>
@@ -671,3 +690,4 @@ export default function SynapseHomePage() {
     </div>
   );
 }
+

@@ -3,7 +3,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Layers, HelpCircle } from "lucide-react";
-import { Badge } from "@/components/ui";
 
 export interface StudyTabsProps {
   activeTab: "flashcards" | "quiz";
@@ -22,7 +21,7 @@ export const StudyTabs: React.FC<StudyTabsProps> = ({
     <div
       role="tablist"
       aria-label="Study modes"
-      className="flex items-center gap-2 p-1.5 rounded-xl bg-surface border border-border-dim shadow-subtle max-w-fit"
+      className="flex items-center gap-1.5 p-1.5 rounded-[48px] bg-mist-gray border border-ash/60 max-w-fit"
     >
       {/* Flashcards Tab */}
       <button
@@ -33,16 +32,16 @@ export const StudyTabs: React.FC<StudyTabsProps> = ({
         aria-controls="panel-flashcards"
         tabIndex={activeTab === "flashcards" ? 0 : -1}
         onClick={() => onTabChange("flashcards")}
-        className={`relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors duration-150 select-none ${
+        className={`relative inline-flex items-center gap-2 px-5 py-2.5 rounded-[48px] text-xs sm:text-sm font-bold uppercase tracking-tight transition-colors duration-150 select-none ${
           activeTab === "flashcards"
-            ? "text-white"
-            : "text-text-secondary hover:text-text-primary hover:bg-subtle/50"
+            ? "text-paper-white"
+            : "text-slate hover:text-carbon-black hover:bg-ash/30"
         }`}
       >
         {activeTab === "flashcards" && (
           <motion.div
             layoutId="activeTabIndicator"
-            className="absolute inset-0 rounded-lg bg-accent-primary shadow-glow"
+            className="absolute inset-0 rounded-[48px] bg-carbon-black"
             transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
           />
         )}
@@ -50,10 +49,10 @@ export const StudyTabs: React.FC<StudyTabsProps> = ({
           <Layers className="h-4 w-4" />
           <span>3D Flashcards</span>
           <span
-            className={`px-1.5 py-0.2 rounded font-mono text-[11px] ${
+            className={`px-2 py-0.5 rounded-[64px] font-mono text-[11px] font-bold ${
               activeTab === "flashcards"
-                ? "bg-white/20 text-white"
-                : "bg-subtle text-text-tertiary"
+                ? "bg-paper-white/20 text-paper-white"
+                : "bg-ash/40 text-slate"
             }`}
           >
             {flashcardsCount}
@@ -70,16 +69,16 @@ export const StudyTabs: React.FC<StudyTabsProps> = ({
         aria-controls="panel-quiz"
         tabIndex={activeTab === "quiz" ? 0 : -1}
         onClick={() => onTabChange("quiz")}
-        className={`relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors duration-150 select-none ${
+        className={`relative inline-flex items-center gap-2 px-5 py-2.5 rounded-[48px] text-xs sm:text-sm font-bold uppercase tracking-tight transition-colors duration-150 select-none ${
           activeTab === "quiz"
-            ? "text-white"
-            : "text-text-secondary hover:text-text-primary hover:bg-subtle/50"
+            ? "text-paper-white"
+            : "text-slate hover:text-carbon-black hover:bg-ash/30"
         }`}
       >
         {activeTab === "quiz" && (
           <motion.div
             layoutId="activeTabIndicator"
-            className="absolute inset-0 rounded-lg bg-accent-primary shadow-glow"
+            className="absolute inset-0 rounded-[48px] bg-carbon-black"
             transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
           />
         )}
@@ -87,10 +86,10 @@ export const StudyTabs: React.FC<StudyTabsProps> = ({
           <HelpCircle className="h-4 w-4" />
           <span>Interactive Quiz</span>
           <span
-            className={`px-1.5 py-0.2 rounded font-mono text-[11px] ${
+            className={`px-2 py-0.5 rounded-[64px] font-mono text-[11px] font-bold ${
               activeTab === "quiz"
-                ? "bg-white/20 text-white"
-                : "bg-subtle text-text-tertiary"
+                ? "bg-paper-white/20 text-paper-white"
+                : "bg-ash/40 text-slate"
             }`}
           >
             {quizCount}

@@ -8,9 +8,9 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles: Record<SkeletonVariant, string> = {
-  rectangular: "rounded-lg",
+  rectangular: "rounded-2xl",
   circular: "rounded-full",
-  text: "rounded h-4 w-full",
+  text: "rounded-lg h-4 w-full",
 };
 
 export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
@@ -19,12 +19,14 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
       <div
         ref={ref}
         className={cn(
-          "bg-gradient-to-r from-bg-subtle via-bg-surface-hover to-bg-subtle bg-[length:200%_100%] animate-shimmer",
+          "bg-gradient-to-r from-mist-gray via-ash/40 to-mist-gray bg-[length:200%_100%] animate-shimmer",
           variantStyles[variant],
           className
         )}
         {...props}
-      />
+      >
+        <span className="sr-only">Loading...</span>
+      </div>
     );
   }
 );
