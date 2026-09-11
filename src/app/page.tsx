@@ -15,6 +15,9 @@ import {
   BookOpen,
   ArrowRight,
   Target,
+  History,
+  Download,
+  Share2,
 } from "lucide-react";
 import {
   Button,
@@ -32,6 +35,9 @@ import { PromptInput, GenerationSkeleton, GenerationError } from "@/components/p
 import { FlashcardDeck, StudyTabs } from "@/components/study";
 import { QuizEngine } from "@/components/quiz";
 import { RetestEngine } from "@/components/retest";
+import { DeckHistoryDrawer } from "@/components/history";
+import { ExportModal } from "@/components/export";
+import { deckStorage } from "@/lib/storage";
 
 export default function SynapseHomePage() {
   const {
@@ -41,6 +47,7 @@ export default function SynapseHomePage() {
     meta,
     currentStep,
     generate,
+    loadDeck,
     cancel,
     retry,
     reset,
@@ -51,9 +58,31 @@ export default function SynapseHomePage() {
   const [activeMode, setActiveMode] = React.useState<"study" | "retest">("study");
   const [lastInputText, setLastInputText] = React.useState("");
 
+  // History & Export modal states
+  const [isHistoryOpen, setIsHistoryOpen] = React.useState(false);
+  const [isExportOpen, setIsExportOpen] = React.useState(false);
+  const [historyCount, setHistoryCount] = React.useState(0);
+
   // Weakness tracking state
   const [wrongQuestionIds, setWrongQuestionIds] = React.useState<string[]>([]);
   const [flaggedCardIds, setFlaggedCardIds] = React.useState<string[]>([]);
+
+  // Update history count
+  const refreshHistoryCount = React.useCallback(() => {
+    setHistoryCount(deckStorage.getAllDeckSummaries().length);
+  }, []);
+
+  React.useEffect(() => {
+    refreshHistoryCount();
+  }, [refreshHistoryCount]);
+
+  // Auto-save generated deck to local storage
+  React.useEffect(() => {
+    if (status === "success" && data && data.id) {
+      deckStorage.saveDeck(data);
+      refreshHistoryCount();
+    }
+  }, [status, data, refreshHistoryCount]);
 
   const handleGenerate = (text: string, options?: { mockMode?: boolean }) => {
     setLastInputText(text);
@@ -69,12 +98,22 @@ export default function SynapseHomePage() {
     }
   };
 
+  const handleSelectHistoryDeck = (deckId: string) => {
+    const saved = deckStorage.getDeckById(deckId);
+    if (saved) {
+      loadDeck(saved);
+      setWrongQuestionIds([]);
+      setFlaggedCardIds([]);
+      setActiveMode("study");
+    }
+  };
+
   const totalWeakPoints = wrongQuestionIds.length + flaggedCardIds.length;
 
   return (
     <div className="min-h-screen bg-app text-text-primary selection:bg-accent-primary/30 selection:text-white pb-24">
-      {/* Top Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-app/80 border-b border-border-dim px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      {/* Top Navigation Bar */}
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-app/80 border-b border-border-dim px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-accent-primary to-indigo-400 flex items-center justify-center shadow-glow">
             <Brain className="h-5 w-5 text-white" />
@@ -94,7 +133,7 @@ export default function SynapseHomePage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Targeted Remediation Mode Badge Trigger */}
           {totalWeakPoints > 0 && status === "success" && (
             <button
@@ -104,14 +143,41 @@ export default function SynapseHomePage() {
             >
               <Target className="w-3.5 h-3.5 animate-pulse text-warning" />
               <span>
-                Focus Mode: {totalWeakPoints} {totalWeakPoints === 1 ? "item" : "items"} to resolve
+                Focus Mode: {totalWeakPoints} {totalWeakPoints === 1 ? "item" : "items"}
               </span>
             </button>
           )}
 
-          <div className="hidden sm:flex items-center gap-2">
+          {/* History Drawer Trigger Button */}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setIsHistoryOpen(true)}
+            leftIcon={<History className="h-3.5 w-3.5" />}
+            className="gap-1.5"
+          >
+            <span>History</span>
+            {historyCount > 0 && (
+              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-accent-subtle text-accent-primary font-mono text-[10px] font-bold">
+                {historyCount}
+              </span>
+            )}
+          </Button>
+
+          {/* Export Deck Button (When active deck loaded) */}
+          {status === "success" && data && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => setIsExportOpen(true)}
+              leftIcon={<Share2 className="h-3.5 w-3.5" />}
+            >
+              Export
+            </Button>
+          )}
+
+          <div className="hidden lg:flex items-center gap-2 ml-1">
             <Kbd keys={["⌘", "Enter"]} />
-            <span className="text-xs text-text-tertiary hidden md:inline">Quick Generate</span>
           </div>
         </div>
       </header>
@@ -205,6 +271,14 @@ export default function SynapseHomePage() {
                         </div>
 
                         <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => setIsExportOpen(true)}
+                            leftIcon={<Share2 className="h-3.5 w-3.5" />}
+                          >
+                            Export
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"
@@ -366,6 +440,25 @@ export default function SynapseHomePage() {
           </>
         )}
       </main>
+
+      {/* History Drawer Modal */}
+      <DeckHistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        activeDeckId={data?.id || null}
+        onSelectDeck={handleSelectHistoryDeck}
+        onDeleteDeck={() => refreshHistoryCount()}
+        onClearAll={() => refreshHistoryCount()}
+      />
+
+      {/* Deck Export Modal */}
+      {data && (
+        <ExportModal
+          isOpen={isExportOpen}
+          onClose={() => setIsExportOpen(false)}
+          deck={data}
+        />
+      )}
     </div>
   );
 }

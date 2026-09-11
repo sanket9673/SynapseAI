@@ -25,6 +25,7 @@ export interface UseAIGenerateReturn {
   } | null;
   currentStep: GenerationStep | null;
   generate: (text: string, options?: { mockMode?: boolean }) => Promise<void>;
+  loadDeck: (deck: StudySet) => void;
   cancel: () => void;
   retry: () => void;
   reset: () => void;
@@ -200,6 +201,23 @@ export function useAIGenerate(): UseAIGenerateReturn {
     };
   }, [clearStepTimers]);
 
+  const loadDeck = useCallback((deck: StudySet) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    clearStepTimers();
+    setData(deck);
+    setStatus("success");
+    setError(null);
+    setCurrentStep(null);
+    setMeta({
+      latencyMs: 0,
+      provider: "Local Storage",
+      model: "Saved Session",
+    });
+  }, [clearStepTimers]);
+
   return {
     status,
     data,
@@ -207,6 +225,7 @@ export function useAIGenerate(): UseAIGenerateReturn {
     meta,
     currentStep,
     generate,
+    loadDeck,
     cancel,
     retry,
     reset,
