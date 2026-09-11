@@ -96,6 +96,9 @@ AI_PROVIDER=groq
 # Groq API Key (Free tier available at https://console.groq.com)
 GROQ_API_KEY=gsk_your_groq_api_key_here
 
+# Groq Model ID (Defaults to high-throughput openai/gpt-oss-120b or openai/gpt-oss-20b)
+GROQ_MODEL=openai/gpt-oss-120b
+
 # OpenAI API Key (Optional fallback)
 OPENAI_API_KEY=sk-your_openai_api_key_here
 ```

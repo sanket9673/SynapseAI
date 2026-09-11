@@ -142,45 +142,69 @@ export async function generateStudySetWithFallback(
 
   // Attempt Primary Provider: Groq
   if (configuredProvider === "groq" && groqKey) {
-    const model = "llama-3.3-70b-versatile";
-    try {
-      const rawOutput = await callChatCompletion(
-        "https://api.groq.com/openai/v1/chat/completions",
-        groqKey,
-        model,
-        inputText
-      );
-      const studySet = parseAndValidateAIOutput(rawOutput, inputText);
-      return {
-        studySet,
-        provider: "groq",
-        model,
-        latencyMs: Date.now() - startTime,
-      };
-    } catch (primaryError) {
-      // If primary failed but OpenAI is configured, attempt fallback
-      if (openAiKey && !(primaryError instanceof AITimeoutError)) {
-        try {
-          const fallbackModel = "gpt-4o-mini";
-          const rawOutput = await callChatCompletion(
-            "https://api.openai.com/v1/chat/completions",
-            openAiKey,
-            fallbackModel,
-            inputText
-          );
-          const studySet = parseAndValidateAIOutput(rawOutput, inputText);
-          return {
-            studySet,
-            provider: "openai",
-            model: fallbackModel,
-            latencyMs: Date.now() - startTime,
-          };
-        } catch {
-          // Fall through to throw original primary error
+    const defaultModel = "openai/gpt-oss-120b";
+    const requestedModel = process.env.GROQ_MODEL?.trim() || defaultModel;
+    const modelCandidates = Array.from(
+      new Set([
+        requestedModel,
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b",
+        "qwen/qwen3.6-27b",
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+      ])
+    );
+
+    let lastError: unknown = null;
+
+    for (const model of modelCandidates) {
+      try {
+        const rawOutput = await callChatCompletion(
+          "https://api.groq.com/openai/v1/chat/completions",
+          groqKey,
+          model,
+          inputText
+        );
+        const studySet = parseAndValidateAIOutput(rawOutput, inputText);
+        return {
+          studySet,
+          provider: "groq",
+          model,
+          latencyMs: Date.now() - startTime,
+        };
+      } catch (err) {
+        lastError = err;
+        // If error is 404 (model_not_found), try next model candidate in list
+        if (err instanceof AIUpstreamError && err.statusCode === 404) {
+          continue;
         }
+        // If it's a rate limit or timeout, break out to OpenAI fallback
+        break;
       }
-      throw primaryError;
     }
+
+    // If Groq failed but OpenAI is configured, attempt fallback
+    if (openAiKey && !(lastError instanceof AITimeoutError)) {
+      try {
+        const fallbackModel = "gpt-4o-mini";
+        const rawOutput = await callChatCompletion(
+          "https://api.openai.com/v1/chat/completions",
+          openAiKey,
+          fallbackModel,
+          inputText
+        );
+        const studySet = parseAndValidateAIOutput(rawOutput, inputText);
+        return {
+          studySet,
+          provider: "openai",
+          model: fallbackModel,
+          latencyMs: Date.now() - startTime,
+        };
+      } catch {
+        // Fall through to throw original primary error
+      }
+    }
+    if (lastError) throw lastError;
   }
 
   // Attempt Secondary Provider: OpenAI
