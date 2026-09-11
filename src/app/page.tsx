@@ -28,7 +28,8 @@ import {
 } from "@/components/ui";
 import { useAIGenerate } from "@/hooks/useAIGenerate";
 import { PromptInput, GenerationSkeleton, GenerationError } from "@/components/prompt";
-import { FlashcardDeck } from "@/components/study";
+import { FlashcardDeck, StudyTabs } from "@/components/study";
+import { QuizEngine } from "@/components/quiz";
 
 export default function SynapseHomePage() {
   const {
@@ -176,38 +177,24 @@ export default function SynapseHomePage() {
                 </CardHeader>
 
                 <CardContent className="space-y-6 pt-0">
-                  {/* Mode Tabs */}
-                  <div className="flex items-center gap-2 border-b border-border-dim pb-3">
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("flashcards")}
-                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
-                        activeTab === "flashcards"
-                          ? "bg-accent-primary text-white shadow-glow"
-                          : "text-text-secondary hover:text-text-primary hover:bg-subtle"
-                      }`}
-                    >
-                      <Layers className="h-4 w-4" />
-                      <span>3D Flashcards ({data.flashcards.length})</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("quiz")}
-                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
-                        activeTab === "quiz"
-                          ? "bg-accent-primary text-white shadow-glow"
-                          : "text-text-secondary hover:text-text-primary hover:bg-subtle"
-                      }`}
-                    >
-                      <HelpCircle className="h-4 w-4" />
-                      <span>Quiz Knowledge Checks ({data.quiz.length})</span>
-                    </button>
+                  {/* Mode Tab Switcher */}
+                  <div className="border-b border-border-dim pb-4">
+                    <StudyTabs
+                      activeTab={activeTab}
+                      onTabChange={setActiveTab}
+                      flashcardsCount={data.flashcards.length}
+                      quizCount={data.quiz.length}
+                    />
                   </div>
 
                   {/* ACTIVE TAB CONTENT */}
                   {activeTab === "flashcards" && (
-                    <div className="py-4">
+                    <div
+                      id="panel-flashcards"
+                      role="tabpanel"
+                      aria-labelledby="tab-flashcards"
+                      className="py-2"
+                    >
                       <FlashcardDeck
                         cards={data.flashcards}
                         deckTitle={data.title || "Synthesized Study Deck"}
@@ -219,62 +206,24 @@ export default function SynapseHomePage() {
                   )}
 
                   {activeTab === "quiz" && (
-                    <div className="space-y-4 py-2">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                          <HelpCircle className="h-4 w-4 text-accent-primary" />
-                          Multiple-Choice Knowledge Checks ({data.quiz.length})
-                        </h4>
-                      </div>
-
-                      <div className="space-y-3">
-                        {data.quiz.map((q, idx) => (
-                          <div
-                            key={q.id || idx}
-                            className="p-4 rounded-xl bg-subtle/40 border border-border-dim space-y-3"
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold text-text-primary">
-                                {idx + 1}. {q.question}
-                              </span>
-                              <Badge variant="neutral" size="sm">
-                                Option #{q.correctOptionIndex + 1} Correct
-                              </Badge>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                              {q.options.map((opt, optIdx) => {
-                                const isCorrect = optIdx === q.correctOptionIndex;
-                                return (
-                                  <div
-                                    key={optIdx}
-                                    className={`p-2.5 rounded-lg text-xs border ${
-                                      isCorrect
-                                        ? "bg-success/10 border-success/40 text-success font-medium"
-                                        : "bg-surface border-border-dim text-text-secondary"
-                                    }`}
-                                  >
-                                    <span className="font-mono mr-1.5 opacity-60">
-                                      {String.fromCharCode(65 + optIdx)}.
-                                    </span>
-                                    {opt}
-                                  </div>
-                                );
-                              })}
-                            </div>
-
-                            <div className="text-xs text-text-tertiary bg-subtle/60 p-2.5 rounded-lg border border-border-dim">
-                              <span className="font-semibold text-text-secondary">Rationale: </span>
-                              {q.explanation}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                    <div
+                      id="panel-quiz"
+                      role="tabpanel"
+                      aria-labelledby="tab-quiz"
+                      className="py-2"
+                    >
+                      <QuizEngine
+                        questions={data.quiz}
+                        quizTitle={data.title || "Synthesized Knowledge Quiz"}
+                        onQuizComplete={(summary) => {
+                          console.log("Quiz assessment finished:", summary);
+                        }}
+                      />
                     </div>
                   )}
 
                   {/* Developer Raw JSON Inspector */}
-                  <div className="pt-2 border-t border-border-dim">
+                  <div className="pt-4 border-t border-border-dim">
                     <button
                       type="button"
                       onClick={() => setRawPayloadOpen(!rawPayloadOpen)}
