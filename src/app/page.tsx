@@ -18,6 +18,10 @@ import {
   History,
   Download,
   Share2,
+  Volume2,
+  VolumeX,
+  Keyboard,
+  Search,
 } from "lucide-react";
 import {
   Button,
@@ -37,7 +41,10 @@ import { QuizEngine } from "@/components/quiz";
 import { RetestEngine } from "@/components/retest";
 import { DeckHistoryDrawer } from "@/components/history";
 import { ExportModal } from "@/components/export";
+import { CommandPalette, ShortcutsModal } from "@/components/palette";
 import { deckStorage } from "@/lib/storage";
+import { sound } from "@/lib/sound";
+import type { CommandAction } from "@/types/palette";
 
 export default function SynapseHomePage() {
   const {
@@ -61,7 +68,20 @@ export default function SynapseHomePage() {
   // History & Export modal states
   const [isHistoryOpen, setIsHistoryOpen] = React.useState(false);
   const [isExportOpen, setIsExportOpen] = React.useState(false);
+  const [isPaletteOpen, setIsPaletteOpen] = React.useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = React.useState(false);
+  const [isMuted, setIsMuted] = React.useState(false);
   const [historyCount, setHistoryCount] = React.useState(0);
+
+  // Sync mute state on mount
+  React.useEffect(() => {
+    setIsMuted(sound.isMuted());
+  }, []);
+
+  const handleToggleMute = () => {
+    const next = sound.toggleMute();
+    setIsMuted(next);
+  };
 
   // Weakness tracking state
   const [wrongQuestionIds, setWrongQuestionIds] = React.useState<string[]>([]);
@@ -83,6 +103,36 @@ export default function SynapseHomePage() {
       refreshHistoryCount();
     }
   }, [status, data, refreshHistoryCount]);
+
+  // Global keyboard shortcuts for Command Palette (⌘K) and Shortcuts HUD (?)
+  React.useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isEditing =
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable);
+
+      // ⌘K or Ctrl+K opens Command Palette
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsPaletteOpen((prev) => !prev);
+        return;
+      }
+
+      // ? opens Shortcuts HUD (unless user is typing in a text field)
+      if (e.key === "?" && !isEditing && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setIsShortcutsOpen((prev) => !prev);
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
   const handleGenerate = (text: string, options?: { mockMode?: boolean }) => {
     setLastInputText(text);
@@ -109,6 +159,118 @@ export default function SynapseHomePage() {
   };
 
   const totalWeakPoints = wrongQuestionIds.length + flaggedCardIds.length;
+
+  // Command palette actions
+  const commandActions: CommandAction[] = React.useMemo(() => {
+    const actions: CommandAction[] = [
+      {
+        id: "nav-flashcards",
+        title: "Study Flashcards",
+        description: "Switch to 3D active recall flashcard deck",
+        category: "Navigation",
+        shortcut: ["1"],
+        icon: <Layers className="w-4 h-4 text-accent-primary" />,
+        perform: () => {
+          setActiveMode("study");
+          setActiveTab("flashcards");
+        },
+        keywords: ["card", "flashcard", "flip", "study", "deck"],
+      },
+      {
+        id: "nav-quiz",
+        title: "Practice Quiz",
+        description: "Switch to 4-option multiple choice assessment",
+        category: "Navigation",
+        shortcut: ["2"],
+        icon: <HelpCircle className="w-4 h-4 text-success" />,
+        perform: () => {
+          setActiveMode("study");
+          setActiveTab("quiz");
+        },
+        keywords: ["quiz", "test", "question", "options", "exam"],
+      },
+      {
+        id: "nav-retest",
+        title: "Targeted Remediation Mode",
+        description: "Isolate missed quiz questions and weak flashcards",
+        category: "Study",
+        shortcut: ["3"],
+        icon: <Target className="w-4 h-4 text-warning" />,
+        perform: () => {
+          setActiveMode("retest");
+        },
+        keywords: ["retest", "weakness", "review", "remediation", "focus", "mistakes"],
+      },
+      {
+        id: "action-new-deck",
+        title: "Synthesize New Deck",
+        description: "Reset active session and return to prompt input",
+        category: "Actions",
+        shortcut: ["⌘", "N"],
+        icon: <RotateCcw className="w-4 h-4 text-text-primary" />,
+        perform: () => {
+          reset();
+          setActiveMode("study");
+        },
+        keywords: ["new", "create", "reset", "prompt", "generate", "start"],
+      },
+      {
+        id: "action-history",
+        title: "Open Session History",
+        description: "Browse and restore previously generated decks",
+        category: "Actions",
+        shortcut: ["⌘", "H"],
+        icon: <History className="w-4 h-4 text-accent-primary" />,
+        perform: () => {
+          setIsHistoryOpen(true);
+        },
+        keywords: ["history", "recent", "saved", "decks", "storage"],
+      },
+      {
+        id: "action-export",
+        title: "Export Active Deck",
+        description: "Export current cards to Markdown or Anki TSV format",
+        category: "Actions",
+        shortcut: ["⌘", "E"],
+        icon: <Share2 className="w-4 h-4 text-success" />,
+        perform: () => {
+          if (data) {
+            setIsExportOpen(true);
+          }
+        },
+        keywords: ["export", "anki", "tsv", "markdown", "download", "save"],
+      },
+      {
+        id: "pref-sound",
+        title: isMuted ? "Unmute Audio Effects" : "Mute Audio Effects",
+        description: isMuted ? "Enable procedural Web Audio cues" : "Disable tactile Web Audio cues",
+        category: "Preferences",
+        icon: isMuted ? (
+          <VolumeX className="w-4 h-4 text-text-tertiary" />
+        ) : (
+          <Volume2 className="w-4 h-4 text-accent-primary" />
+        ),
+        perform: () => {
+          handleToggleMute();
+        },
+        keywords: ["sound", "audio", "mute", "unmute", "volume", "effects"],
+      },
+      {
+        id: "pref-shortcuts",
+        title: "Keyboard Shortcuts Guide",
+        description: "Display the hotkeys HUD legend",
+        category: "Preferences",
+        shortcut: ["?"],
+        icon: <Keyboard className="w-4 h-4 text-text-secondary" />,
+        perform: () => {
+          setIsShortcutsOpen(true);
+        },
+        keywords: ["shortcuts", "hotkeys", "keybindings", "keyboard", "help"],
+      },
+    ];
+
+    return actions;
+  }, [data, isMuted, reset]);
 
   return (
     <div className="min-h-screen bg-app text-text-primary selection:bg-accent-primary/30 selection:text-white pb-24">
@@ -148,6 +310,33 @@ export default function SynapseHomePage() {
             </button>
           )}
 
+          {/* Audio Sound Effects Toggle */}
+          <button
+            type="button"
+            onClick={handleToggleMute}
+            aria-label={isMuted ? "Unmute audio effects" : "Mute audio effects"}
+            title={isMuted ? "Audio muted (Click to enable sound)" : "Audio active (Click to mute)"}
+            className={`p-2 rounded-lg border transition-colors ${
+              isMuted
+                ? "border-border-dim text-text-tertiary hover:text-text-secondary hover:bg-subtle/50"
+                : "border-accent-primary/40 bg-accent-subtle/50 text-accent-primary hover:bg-accent-subtle"
+            }`}
+          >
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+
+          {/* Quick Command Palette Search Button */}
+          <button
+            type="button"
+            onClick={() => setIsPaletteOpen(true)}
+            className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-border-dim hover:border-border-bright bg-surface hover:bg-subtle text-xs text-text-secondary hover:text-text-primary transition-all font-mono shadow-subtle"
+            title="Open Command Palette (⌘K)"
+          >
+            <Search className="h-3.5 w-3.5 text-text-tertiary" />
+            <span>Search</span>
+            <Kbd keys={["⌘K"]} className="text-[10px] py-0 px-1.5" />
+          </button>
+
           {/* History Drawer Trigger Button */}
           <Button
             size="sm"
@@ -156,9 +345,9 @@ export default function SynapseHomePage() {
             leftIcon={<History className="h-3.5 w-3.5" />}
             className="gap-1.5"
           >
-            <span>History</span>
+            <span className="hidden sm:inline">History</span>
             {historyCount > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-accent-subtle text-accent-primary font-mono text-[10px] font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-accent-subtle text-accent-primary font-mono text-[10px] font-bold">
                 {historyCount}
               </span>
             )}
@@ -172,13 +361,20 @@ export default function SynapseHomePage() {
               onClick={() => setIsExportOpen(true)}
               leftIcon={<Share2 className="h-3.5 w-3.5" />}
             >
-              Export
+              <span className="hidden sm:inline">Export</span>
             </Button>
           )}
 
-          <div className="hidden lg:flex items-center gap-2 ml-1">
-            <Kbd keys={["⌘", "Enter"]} />
-          </div>
+          {/* Shortcuts HUD Button */}
+          <button
+            type="button"
+            onClick={() => setIsShortcutsOpen(true)}
+            aria-label="Keyboard Shortcuts"
+            title="Keyboard Shortcuts (?)"
+            className="p-2 rounded-lg border border-border-dim hover:border-border-bright bg-surface hover:bg-subtle text-text-tertiary hover:text-text-primary transition-colors"
+          >
+            <Keyboard className="h-4 w-4" />
+          </button>
         </div>
       </header>
 
@@ -459,6 +655,19 @@ export default function SynapseHomePage() {
           deck={data}
         />
       )}
+
+      {/* Global Command Palette */}
+      <CommandPalette
+        isOpen={isPaletteOpen}
+        onClose={() => setIsPaletteOpen(false)}
+        actions={commandActions}
+      />
+
+      {/* Keyboard Shortcuts HUD */}
+      <ShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
+      />
     </div>
   );
 }

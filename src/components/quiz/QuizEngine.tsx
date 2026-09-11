@@ -11,6 +11,7 @@ import { QuizOptionItem } from "./QuizOptionItem";
 import { QuizExplanation } from "./QuizExplanation";
 import { QuizScoreSummary } from "./QuizScoreSummary";
 import { Button, Card, Badge, Progress, Kbd } from "@/components/ui";
+import { sound } from "@/lib/sound";
 
 export const QuizEngine: React.FC<QuizEngineProps> = ({
   questions,
@@ -49,6 +50,12 @@ export const QuizEngine: React.FC<QuizEngineProps> = ({
 
   const handleSubmit = useCallback(() => {
     if (currentQuestion && selectedOptionIndex !== null && !isSubmitted) {
+      const isCorrect = selectedOptionIndex === currentQuestion.correctOptionIndex;
+      if (isCorrect) {
+        sound.playCorrect();
+      } else {
+        sound.playIncorrect();
+      }
       submitAnswer(currentQuestion);
     }
   }, [currentQuestion, selectedOptionIndex, isSubmitted, submitAnswer]);
@@ -57,9 +64,10 @@ export const QuizEngine: React.FC<QuizEngineProps> = ({
     nextQuestion(totalQuestions);
   }, [nextQuestion, totalQuestions]);
 
-  // When completed, trigger parent callback
+  // When completed, trigger parent callback and sound
   useEffect(() => {
     if (isComplete && onQuizComplete) {
+      sound.playComplete();
       const percentage = Math.round((correctCount / totalQuestions) * 100);
       onQuizComplete({
         total: totalQuestions,

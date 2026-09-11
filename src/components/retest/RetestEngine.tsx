@@ -8,6 +8,7 @@ import { useRemediationState } from "@/hooks/useRemediationState";
 import { RetestHeader } from "./RetestHeader";
 import { RetestVictory } from "./RetestVictory";
 import { Button, Card, CardContent } from "@/components/ui";
+import { sound } from "@/lib/sound";
 
 export const RetestEngine: React.FC<RetestEngineProps> = ({
   studySet,
@@ -51,6 +52,7 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
     setIsCorrectFeedback(correct);
 
     if (correct) {
+      sound.playCorrect();
       setShowFloatingPill(true);
       setTimeout(() => setShowFloatingPill(false), 1200);
 
@@ -61,6 +63,7 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
         setIsCorrectFeedback(null);
       }, 1000);
     } else {
+      sound.playIncorrect();
       setTimeout(() => {
         markQuestionStillWrong(currentQuestion.id);
         setSelectedOption(null);
@@ -71,9 +74,16 @@ export const RetestEngine: React.FC<RetestEngineProps> = ({
 
   const handleCardMastered = () => {
     if (!currentCard) return;
+    sound.playCorrect();
     resolveCurrentCard(currentCard.id);
     onCardsResolved([currentCard.id]);
   };
+
+  React.useEffect(() => {
+    if (isComplete) {
+      sound.playComplete();
+    }
+  }, [isComplete]);
 
   if (isComplete) {
     return (

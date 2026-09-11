@@ -8,6 +8,7 @@ import { FlashcardControls } from "./FlashcardControls";
 import { useFlashcardKeyboard } from "@/hooks/useFlashcardKeyboard";
 import { Button, Card, Badge } from "@/components/ui";
 import { CheckCircle2, AlertTriangle, Trophy, RefreshCw, Layers } from "lucide-react";
+import { sound } from "@/lib/sound";
 
 export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
   cards,
@@ -55,6 +56,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
   }, [currentIndex]);
 
   const handleFlip = useCallback(() => {
+    sound.playFlip();
     setIsFlipped((prev) => !prev);
   }, []);
 
@@ -78,6 +80,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
           handleNext();
         } else {
           setIsComplete(true);
+          sound.playComplete();
           const nextMastered =
             stats.masteredCount + (status === "mastered" && masteryMap[activeCard.id] !== "mastered" ? 1 : 0);
           const nextReview =
