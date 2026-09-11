@@ -28,6 +28,7 @@ import {
 } from "@/components/ui";
 import { useAIGenerate } from "@/hooks/useAIGenerate";
 import { PromptInput, GenerationSkeleton, GenerationError } from "@/components/prompt";
+import { FlashcardDeck } from "@/components/study";
 
 export default function SynapseHomePage() {
   const {
@@ -43,6 +44,7 @@ export default function SynapseHomePage() {
   } = useAIGenerate();
 
   const [rawPayloadOpen, setRawPayloadOpen] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<"flashcards" | "quiz">("flashcards");
   const [lastInputText, setLastInputText] = React.useState("");
 
   const handleGenerate = (text: string, options?: { mockMode?: boolean }) => {
@@ -129,7 +131,7 @@ export default function SynapseHomePage() {
 
           {/* 3. SUCCESS / DECK READY PREVIEW STATE */}
           {status === "success" && data && (
-            <div className="space-y-6 animate-in fade-in duration-300">
+            <div className="space-y-8 animate-in fade-in duration-300">
               {/* Deck Summary Card */}
               <Card glow className="border-accent-primary/40 bg-surface shadow-elevated">
                 <CardHeader>
@@ -174,128 +176,102 @@ export default function SynapseHomePage() {
                 </CardHeader>
 
                 <CardContent className="space-y-6 pt-0">
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim">
-                      <div className="text-[11px] font-mono text-text-tertiary">Flashcards</div>
-                      <div className="text-xl font-bold font-mono text-text-primary">
-                        {data.flashcards.length}
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim">
-                      <div className="text-[11px] font-mono text-text-tertiary">Quiz Questions</div>
-                      <div className="text-xl font-bold font-mono text-text-primary">
-                        {data.quiz.length}
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim">
-                      <div className="text-[11px] font-mono text-text-tertiary">Pedagogy Model</div>
-                      <div className="text-sm font-semibold text-accent-primary truncate">
-                        FSRS Active Recall
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim">
-                      <div className="text-[11px] font-mono text-text-tertiary">Status</div>
-                      <div className="text-sm font-semibold text-success flex items-center gap-1">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Ready
-                      </div>
-                    </div>
+                  {/* Mode Tabs */}
+                  <div className="flex items-center gap-2 border-b border-border-dim pb-3">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("flashcards")}
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+                        activeTab === "flashcards"
+                          ? "bg-accent-primary text-white shadow-glow"
+                          : "text-text-secondary hover:text-text-primary hover:bg-subtle"
+                      }`}
+                    >
+                      <Layers className="h-4 w-4" />
+                      <span>3D Flashcards ({data.flashcards.length})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("quiz")}
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+                        activeTab === "quiz"
+                          ? "bg-accent-primary text-white shadow-glow"
+                          : "text-text-secondary hover:text-text-primary hover:bg-subtle"
+                      }`}
+                    >
+                      <HelpCircle className="h-4 w-4" />
+                      <span>Quiz Knowledge Checks ({data.quiz.length})</span>
+                    </button>
                   </div>
 
-                  {/* Flashcards Preview Strip */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                        <Layers className="h-4 w-4 text-accent-primary" />
-                        Flashcard Concept Previews ({data.flashcards.length})
-                      </h4>
+                  {/* ACTIVE TAB CONTENT */}
+                  {activeTab === "flashcards" && (
+                    <div className="py-4">
+                      <FlashcardDeck
+                        cards={data.flashcards}
+                        deckTitle={data.title || "Synthesized Study Deck"}
+                        onDeckComplete={(stats) => {
+                          console.log("Deck practice completed:", stats);
+                        }}
+                      />
                     </div>
+                  )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {data.flashcards.map((card, idx) => (
-                        <div
-                          key={card.id || idx}
-                          className="p-4 rounded-xl bg-subtle/40 border border-border-dim space-y-2 hover:border-border-bright transition-colors"
-                        >
-                          <div className="flex items-center justify-between text-xs">
-                            <Badge variant="accent" size="sm">
-                              Card #{idx + 1}
-                            </Badge>
-                            {card.category && (
-                              <span className="text-[11px] font-mono text-text-tertiary">
-                                {card.category}
+                  {activeTab === "quiz" && (
+                    <div className="space-y-4 py-2">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                          <HelpCircle className="h-4 w-4 text-accent-primary" />
+                          Multiple-Choice Knowledge Checks ({data.quiz.length})
+                        </h4>
+                      </div>
+
+                      <div className="space-y-3">
+                        {data.quiz.map((q, idx) => (
+                          <div
+                            key={q.id || idx}
+                            className="p-4 rounded-xl bg-subtle/40 border border-border-dim space-y-3"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold text-text-primary">
+                                {idx + 1}. {q.question}
                               </span>
-                            )}
-                          </div>
-                          <div className="text-xs font-semibold text-text-primary">
-                            Q: {card.front}
-                          </div>
-                          <div className="text-xs text-text-secondary pt-1 border-t border-border-dim/40">
-                            A: {card.back}
-                          </div>
-                          {card.hint && (
-                            <div className="text-[11px] text-accent-primary/80 italic">
-                              💡 Hint: {card.hint}
+                              <Badge variant="neutral" size="sm">
+                                Option #{q.correctOptionIndex + 1} Correct
+                              </Badge>
                             </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Quiz Preview Strip */}
-                  <div className="space-y-3 pt-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                        <HelpCircle className="h-4 w-4 text-accent-primary" />
-                        Multiple-Choice Knowledge Checks ({data.quiz.length})
-                      </h4>
-                    </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {q.options.map((opt, optIdx) => {
+                                const isCorrect = optIdx === q.correctOptionIndex;
+                                return (
+                                  <div
+                                    key={optIdx}
+                                    className={`p-2.5 rounded-lg text-xs border ${
+                                      isCorrect
+                                        ? "bg-success/10 border-success/40 text-success font-medium"
+                                        : "bg-surface border-border-dim text-text-secondary"
+                                    }`}
+                                  >
+                                    <span className="font-mono mr-1.5 opacity-60">
+                                      {String.fromCharCode(65 + optIdx)}.
+                                    </span>
+                                    {opt}
+                                  </div>
+                                );
+                              })}
+                            </div>
 
-                    <div className="space-y-3">
-                      {data.quiz.map((q, idx) => (
-                        <div
-                          key={q.id || idx}
-                          className="p-4 rounded-xl bg-subtle/40 border border-border-dim space-y-3"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-text-primary">
-                              {idx + 1}. {q.question}
-                            </span>
-                            <Badge variant="neutral" size="sm">
-                              Option #{q.correctOptionIndex + 1} Correct
-                            </Badge>
+                            <div className="text-xs text-text-tertiary bg-subtle/60 p-2.5 rounded-lg border border-border-dim">
+                              <span className="font-semibold text-text-secondary">Rationale: </span>
+                              {q.explanation}
+                            </div>
                           </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {q.options.map((opt, optIdx) => {
-                              const isCorrect = optIdx === q.correctOptionIndex;
-                              return (
-                                <div
-                                  key={optIdx}
-                                  className={`p-2.5 rounded-lg text-xs border ${
-                                    isCorrect
-                                      ? "bg-success/10 border-success/40 text-success font-medium"
-                                      : "bg-surface border-border-dim text-text-secondary"
-                                  }`}
-                                >
-                                  <span className="font-mono mr-1.5 opacity-60">
-                                    {String.fromCharCode(65 + optIdx)}.
-                                  </span>
-                                  {opt}
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          <div className="text-xs text-text-tertiary bg-subtle/60 p-2.5 rounded-lg border border-border-dim">
-                            <span className="font-semibold text-text-secondary">Rationale: </span>
-                            {q.explanation}
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Developer Raw JSON Inspector */}
                   <div className="pt-2 border-t border-border-dim">
@@ -341,7 +317,7 @@ export default function SynapseHomePage() {
                   1. Atomic Concept Flashcards
                 </h3>
                 <p className="text-xs text-text-secondary leading-relaxed">
-                  Extracts core themes into single-concept question-and-answer pairs with progressive hints.
+                  Extracts core themes into single-concept question-and-answer pairs with progressive hints and 3D flip physics.
                 </p>
               </Card>
 
