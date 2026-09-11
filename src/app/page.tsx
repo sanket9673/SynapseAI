@@ -2,18 +2,18 @@
 
 import * as React from "react";
 import {
-  Sparkles,
-  Zap,
-  ArrowRight,
   Brain,
-  Search,
+  Sparkles,
+  Layers,
+  HelpCircle,
+  Clock,
+  Cpu,
+  ChevronDown,
+  ChevronUp,
+  RotateCcw,
+  CheckCircle2,
   BookOpen,
-  Check,
-  RefreshCw,
-  Sliders,
-  Send,
-  Bell,
-  Trash2,
+  ArrowRight,
 } from "lucide-react";
 import {
   Button,
@@ -24,526 +24,352 @@ import {
   CardContent,
   CardFooter,
   Badge,
-  Textarea,
-  Progress,
-  Skeleton,
   Kbd,
-  Notice,
 } from "@/components/ui";
+import { useAIGenerate } from "@/hooks/useAIGenerate";
+import { PromptInput, GenerationSkeleton, GenerationError } from "@/components/prompt";
 
-export default function ShowcasePage() {
-  const [btnLoading, setBtnLoading] = React.useState(false);
-  const [progressVal, setProgressVal] = React.useState(68);
-  const [textareaValue, setTextareaValue] = React.useState("");
-  const [showError, setShowError] = React.useState(false);
-  const [activeNotices, setActiveNotices] = React.useState({
-    info: true,
-    success: true,
-    warning: true,
-    error: true,
-  });
+export default function SynapseHomePage() {
+  const {
+    status,
+    data,
+    error,
+    meta,
+    currentStep,
+    generate,
+    cancel,
+    retry,
+    reset,
+  } = useAIGenerate();
+
+  const [rawPayloadOpen, setRawPayloadOpen] = React.useState(false);
+  const [lastInputText, setLastInputText] = React.useState("");
+
+  const handleGenerate = (text: string, options?: { mockMode?: boolean }) => {
+    setLastInputText(text);
+    generate(text, options);
+  };
+
+  const handleMockFallback = () => {
+    if (lastInputText) {
+      generate(lastInputText, { mockMode: true });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-app text-text-primary selection:bg-accent-primary/30 selection:text-white pb-24">
-      {/* Top Navigation Bar */}
+      {/* Top Header */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-app/80 border-b border-border-dim px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-accent-primary to-indigo-400 flex items-center justify-center shadow-glow">
-            <Brain className="h-4 w-4 text-white" />
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-accent-primary to-indigo-400 flex items-center justify-center shadow-glow">
+            <Brain className="h-5 w-5 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm sm:text-base tracking-tight text-white">
+              <span className="font-bold text-base sm:text-lg tracking-tight text-white">
                 SYNAPSE
               </span>
               <Badge variant="accent" size="sm" dot>
-                DS v1.0
+                AI Study Assistant
               </Badge>
             </div>
             <p className="text-[11px] text-text-tertiary font-mono hidden sm:block">
-              AI Active Recall Engine // Design System & Primitives
+              AI-Native Active Recall & Pedagogical Synthesis Engine
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <Kbd keys={["⌘", "K"]} />
-          <Button
-            size="sm"
-            variant="outline"
-            leftIcon={<RefreshCw className="h-3.5 w-3.5" />}
-            onClick={() => {
-              setBtnLoading(true);
-              setTimeout(() => setBtnLoading(false), 2000);
-            }}
-          >
-            Simulate Load
-          </Button>
+          <Kbd keys={["⌘", "Enter"]} />
+          <span className="text-xs text-text-tertiary hidden md:inline">Quick Generate</span>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 space-y-12">
-        {/* Hero Section */}
-        <section className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-subtle border border-border-dim text-xs font-mono text-accent-primary">
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 space-y-8">
+        {/* Hero Banner */}
+        <section className="space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-border-dim text-xs font-mono text-accent-primary shadow-subtle">
             <Sparkles className="h-3.5 w-3.5 text-accent-primary" />
-            <span>FLAM AI Study System Core Primitives</span>
+            <span>Active Recall & Spaced Repetition Engine</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-text-primary">
-            Accessible UI Design System
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-text-primary">
+            Transform Raw Knowledge into Permanent Memory.
           </h1>
-          <p className="text-text-secondary text-sm sm:text-base max-w-3xl leading-relaxed">
-            Engineered to Linear/Vercel fidelity standards. Strictly typed, accessible with full ARIA semantics, zero layout shift, dark-canvas optimized tokens, and micro-interactions.
+          <p className="text-text-secondary text-sm sm:text-base max-w-2xl leading-relaxed">
+            Paste notes, transcripts, or complex topics below. Synapse synthesizes high-retention flashcards and pedagogical quiz questions in seconds.
           </p>
         </section>
 
-        {/* 1. BUTTONS SECTION */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border-dim pb-3">
-            <div>
-              <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
-                1. Button Primitive
-              </h2>
-              <p className="text-xs text-text-secondary">
-                Variants, sizes, icon composition, and non-shifting loading states with ARIA busy attributes.
-              </p>
-            </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setBtnLoading(!btnLoading)}
-            >
-              Toggle Loading: <span className="ml-1 font-mono text-accent-primary">{btnLoading ? "ON" : "OFF"}</span>
-            </Button>
-          </div>
-
-          {/* Variants Grid */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Variants Matrix</CardTitle>
-              <CardDescription>Primary, Secondary, Outline, Ghost, and Danger actions</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-wrap items-center gap-3">
-              <Button variant="primary" isLoading={btnLoading} leftIcon={<Zap className="h-4 w-4" />}>
-                Primary Action
-              </Button>
-              <Button variant="secondary" isLoading={btnLoading} leftIcon={<BookOpen className="h-4 w-4" />}>
-                Secondary
-              </Button>
-              <Button variant="outline" isLoading={btnLoading}>
-                Outline Action
-              </Button>
-              <Button variant="ghost" isLoading={btnLoading}>
-                Ghost Action
-              </Button>
-              <Button variant="danger" isLoading={btnLoading} leftIcon={<Trash2 className="h-4 w-4" />}>
-                Danger Action
-              </Button>
-              <Button variant="primary" disabled>
-                Disabled
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Sizes Grid */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Sizes Hierarchy</CardTitle>
-              <CardDescription>sm (32px), md (40px), lg (48px), and icon (40px square)</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-wrap items-center gap-3">
-              <Button size="sm" variant="secondary" leftIcon={<Search className="h-3.5 w-3.5" />}>
-                Small (sm)
-              </Button>
-              <Button size="md" variant="secondary" leftIcon={<Search className="h-4 w-4" />}>
-                Medium (md)
-              </Button>
-              <Button size="lg" variant="secondary" rightIcon={<ArrowRight className="h-5 w-5" />}>
-                Large (lg)
-              </Button>
-              <Button size="icon" variant="secondary" aria-label="Search">
-                <Search className="h-4 w-4" />
-              </Button>
-              <Button size="icon" variant="primary" aria-label="Settings">
-                <Sliders className="h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Prompt Input Area */}
+        <section>
+          <PromptInput
+            onGenerate={handleGenerate}
+            onCancel={cancel}
+            isLoading={status === "loading"}
+          />
         </section>
 
-        {/* 2. CARDS & GLOW SECTION */}
-        <section className="space-y-4">
-          <div className="border-b border-border-dim pb-3">
-            <h2 className="text-lg font-semibold text-text-primary">
-              2. Compound Card Primitive
-            </h2>
-            <p className="text-xs text-text-secondary">
-              Composable hierarchy (`CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`) with optional indigo ambient glow.
-            </p>
-          </div>
+        {/* Dynamic Workspace Container */}
+        <section className="space-y-6">
+          {/* 1. LOADING STATE */}
+          {status === "loading" && (
+            <GenerationSkeleton step={currentStep} onCancel={cancel} />
+          )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Standard Card */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Standard Elevation</CardTitle>
-                  <Badge variant="neutral">Default</Badge>
+          {/* 2. ERROR STATE */}
+          {status === "error" && error && (
+            <GenerationError
+              error={error}
+              onRetry={retry}
+              onReset={reset}
+              onMockFallback={handleMockFallback}
+            />
+          )}
+
+          {/* 3. SUCCESS / DECK READY PREVIEW STATE */}
+          {status === "success" && data && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              {/* Deck Summary Card */}
+              <Card glow className="border-accent-primary/40 bg-surface shadow-elevated">
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="success" dot size="sm">
+                          Deck Synthesized
+                        </Badge>
+                        {meta && (
+                          <>
+                            <Badge variant="neutral" size="sm">
+                              <Cpu className="h-3 w-3 mr-1" />
+                              {meta.provider} • {meta.model}
+                            </Badge>
+                            <Badge variant="neutral" size="sm">
+                              <Clock className="h-3 w-3 mr-1" />
+                              {meta.latencyMs}ms
+                            </Badge>
+                          </>
+                        )}
+                      </div>
+                      <CardTitle className="text-xl sm:text-2xl text-white">
+                        {data.title}
+                      </CardTitle>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={reset}
+                        leftIcon={<RotateCcw className="h-3.5 w-3.5" />}
+                      >
+                        New Deck
+                      </Button>
+                    </div>
+                  </div>
+                  <CardDescription className="text-text-secondary text-sm pt-2 leading-relaxed">
+                    {data.summary}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-6 pt-0">
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim">
+                      <div className="text-[11px] font-mono text-text-tertiary">Flashcards</div>
+                      <div className="text-xl font-bold font-mono text-text-primary">
+                        {data.flashcards.length}
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim">
+                      <div className="text-[11px] font-mono text-text-tertiary">Quiz Questions</div>
+                      <div className="text-xl font-bold font-mono text-text-primary">
+                        {data.quiz.length}
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim">
+                      <div className="text-[11px] font-mono text-text-tertiary">Pedagogy Model</div>
+                      <div className="text-sm font-semibold text-accent-primary truncate">
+                        FSRS Active Recall
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim">
+                      <div className="text-[11px] font-mono text-text-tertiary">Status</div>
+                      <div className="text-sm font-semibold text-success flex items-center gap-1">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Ready
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Flashcards Preview Strip */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                        <Layers className="h-4 w-4 text-accent-primary" />
+                        Flashcard Concept Previews ({data.flashcards.length})
+                      </h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {data.flashcards.map((card, idx) => (
+                        <div
+                          key={card.id || idx}
+                          className="p-4 rounded-xl bg-subtle/40 border border-border-dim space-y-2 hover:border-border-bright transition-colors"
+                        >
+                          <div className="flex items-center justify-between text-xs">
+                            <Badge variant="accent" size="sm">
+                              Card #{idx + 1}
+                            </Badge>
+                            {card.category && (
+                              <span className="text-[11px] font-mono text-text-tertiary">
+                                {card.category}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs font-semibold text-text-primary">
+                            Q: {card.front}
+                          </div>
+                          <div className="text-xs text-text-secondary pt-1 border-t border-border-dim/40">
+                            A: {card.back}
+                          </div>
+                          {card.hint && (
+                            <div className="text-[11px] text-accent-primary/80 italic">
+                              💡 Hint: {card.hint}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quiz Preview Strip */}
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                        <HelpCircle className="h-4 w-4 text-accent-primary" />
+                        Multiple-Choice Knowledge Checks ({data.quiz.length})
+                      </h4>
+                    </div>
+
+                    <div className="space-y-3">
+                      {data.quiz.map((q, idx) => (
+                        <div
+                          key={q.id || idx}
+                          className="p-4 rounded-xl bg-subtle/40 border border-border-dim space-y-3"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-text-primary">
+                              {idx + 1}. {q.question}
+                            </span>
+                            <Badge variant="neutral" size="sm">
+                              Option #{q.correctOptionIndex + 1} Correct
+                            </Badge>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {q.options.map((opt, optIdx) => {
+                              const isCorrect = optIdx === q.correctOptionIndex;
+                              return (
+                                <div
+                                  key={optIdx}
+                                  className={`p-2.5 rounded-lg text-xs border ${
+                                    isCorrect
+                                      ? "bg-success/10 border-success/40 text-success font-medium"
+                                      : "bg-surface border-border-dim text-text-secondary"
+                                  }`}
+                                >
+                                  <span className="font-mono mr-1.5 opacity-60">
+                                    {String.fromCharCode(65 + optIdx)}.
+                                  </span>
+                                  {opt}
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          <div className="text-xs text-text-tertiary bg-subtle/60 p-2.5 rounded-lg border border-border-dim">
+                            <span className="font-semibold text-text-secondary">Rationale: </span>
+                            {q.explanation}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Developer Raw JSON Inspector */}
+                  <div className="pt-2 border-t border-border-dim">
+                    <button
+                      type="button"
+                      onClick={() => setRawPayloadOpen(!rawPayloadOpen)}
+                      className="flex items-center justify-between w-full text-xs font-mono text-text-tertiary hover:text-text-primary py-2 transition-colors"
+                    >
+                      <span>[Developer Mode] Inspect Raw AI Response Payload</span>
+                      {rawPayloadOpen ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </button>
+
+                    {rawPayloadOpen && (
+                      <pre className="mt-2 p-4 rounded-lg bg-app border border-border-dim text-[11px] font-mono text-text-secondary overflow-x-auto max-h-80">
+                        {JSON.stringify(
+                          {
+                            data,
+                            meta,
+                          },
+                          null,
+                          2
+                        )}
+                      </pre>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* 4. IDLE STATE ONBOARDING */}
+          {status === "idle" && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              <Card className="border-border-dim bg-surface p-5 space-y-2.5">
+                <div className="h-8 w-8 rounded-lg bg-accent-subtle text-accent-primary flex items-center justify-center">
+                  <Layers className="h-4 w-4" />
                 </div>
-                <CardDescription>Border dim with subtle elevation shadow.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
+                <h3 className="text-sm font-semibold text-text-primary">
+                  1. Atomic Concept Flashcards
+                </h3>
                 <p className="text-xs text-text-secondary leading-relaxed">
-                  Engineered for consistent background contrast across dark themes. Supports nested cards and clean layout compartmentalization.
+                  Extracts core themes into single-concept question-and-answer pairs with progressive hints.
                 </p>
-                <div className="p-3 rounded-lg bg-subtle/60 border border-border-dim flex items-center justify-between text-xs">
-                  <span className="text-text-secondary">Active Retention Rate</span>
-                  <span className="font-mono text-success font-semibold">94.2%</span>
-                </div>
-              </CardContent>
-              <CardFooter className="justify-between">
-                <span className="text-xs text-text-tertiary font-mono">ID: DECK-902</span>
-                <Button size="sm" variant="ghost">Dismiss</Button>
-              </CardFooter>
-            </Card>
+              </Card>
 
-            {/* Glowing Card */}
-            <Card glow>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-accent-primary" />
-                    Ambient Glow Card
-                  </CardTitle>
-                  <Badge variant="accent" dot>Featured</Badge>
+              <Card className="border-border-dim bg-surface p-5 space-y-2.5">
+                <div className="h-8 w-8 rounded-lg bg-success-subtle text-success flex items-center justify-center">
+                  <HelpCircle className="h-4 w-4" />
                 </div>
-                <CardDescription>Indigo drop-shadow (`glow=true`) for focused state.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
+                <h3 className="text-sm font-semibold text-text-primary">
+                  2. 4-Option Multiple Choice
+                </h3>
                 <p className="text-xs text-text-secondary leading-relaxed">
-                  Highlights high-priority AI insights, active recall recommendations, or live sessions.
+                  Generates rigorous distractor options and pedagogical rationale explanations for deeper comprehension.
                 </p>
-                <div className="p-3 rounded-lg bg-accent-subtle/30 border border-accent-primary/30 flex items-center justify-between text-xs">
-                  <span className="text-accent-primary font-medium">Smart Question Generation</span>
-                  <Badge variant="accent" size="sm">Groq Llama-3 Ready</Badge>
-                </div>
-              </CardContent>
-              <CardFooter className="justify-between">
-                <span className="text-xs text-accent-primary font-mono">Active Focus</span>
-                <Button size="sm" variant="primary" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-                  Start Review
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </section>
+              </Card>
 
-        {/* 3. BADGES & KEYBOARDS */}
-        <section className="space-y-4">
-          <div className="border-b border-border-dim pb-3">
-            <h2 className="text-lg font-semibold text-text-primary">
-              3. Badges & Keyboard Shortcut Primitives
-            </h2>
-            <p className="text-xs text-text-secondary">
-              Status tags with pulsing indicators and monospace kbd elements.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Badges */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Status Badges</CardTitle>
-                <CardDescription>Variants with live status dot animations</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="neutral">neutral</Badge>
-                  <Badge variant="accent">accent</Badge>
-                  <Badge variant="success">success</Badge>
-                  <Badge variant="warning">warning</Badge>
-                  <Badge variant="error">error</Badge>
-                  <Badge variant="outline">outline</Badge>
+              <Card className="border-border-dim bg-surface p-5 space-y-2.5">
+                <div className="h-8 w-8 rounded-lg bg-warning/10 text-warning flex items-center justify-center">
+                  <Clock className="h-4 w-4" />
                 </div>
-                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border-dim">
-                  <Badge variant="neutral" dot size="sm">Idle</Badge>
-                  <Badge variant="accent" dot size="sm">AI Processing</Badge>
-                  <Badge variant="success" dot size="sm">Synced</Badge>
-                  <Badge variant="warning" dot size="sm">Due Soon</Badge>
-                  <Badge variant="error" dot size="sm">Critical</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Kbd shortcuts */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Kbd Shortcut Pills</CardTitle>
-                <CardDescription>Raised border depth and monospace typography</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-subtle/40 border border-border-dim">
-                  <span className="text-xs text-text-secondary">Quick Search Engine</span>
-                  <Kbd keys={["⌘", "K"]} />
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-subtle/40 border border-border-dim">
-                  <span className="text-xs text-text-secondary">Submit Active Recall Answer</span>
-                  <Kbd keys={["⌘", "Enter"]} />
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-subtle/40 border border-border-dim">
-                  <span className="text-xs text-text-secondary">Toggle Focus Matrix</span>
-                  <Kbd keys={["Ctrl", "Shift", "P"]} />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* 4. TEXTAREA PRIMITIVE */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border-dim pb-3">
-            <div>
-              <h2 className="text-lg font-semibold text-text-primary">
-                4. Textarea Primitive
-              </h2>
-              <p className="text-xs text-text-secondary">
-                Accessible input with helper text, error bindings (`aria-invalid`), and shortcut hint badges.
-              </p>
+                <h3 className="text-sm font-semibold text-text-primary">
+                  3. Sub-Second Performance
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Powered by ultra-fast LPU inference (Groq Llama-3) with automatic offline fallback resilience.
+                </p>
+              </Card>
             </div>
-            <Button
-              size="sm"
-              variant={showError ? "danger" : "outline"}
-              onClick={() => setShowError(!showError)}
-            >
-              Toggle Error: {showError ? "Simulated Error ON" : "Normal"}
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Interactive Recall Textarea</CardTitle>
-                <CardDescription>Active recall response input field with inline shortcut</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Textarea
-                  value={textareaValue}
-                  onChange={(e) => setTextareaValue(e.target.value)}
-                  placeholder="Explain the process of long-term potentiation in your own words..."
-                  helperText={!showError ? "Try to explain without looking at notes to maximize retention." : undefined}
-                  error={showError ? "Answer cannot be blank or contain fewer than 10 characters." : undefined}
-                  shortcutHint="⌘ + Enter"
-                  rows={4}
-                />
-                <div className="flex items-center justify-between pt-2">
-                  <span className="text-xs text-text-tertiary font-mono">
-                    Characters: {textareaValue.length}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    disabled={textareaValue.trim().length === 0}
-                    rightIcon={<Send className="h-3.5 w-3.5" />}
-                  >
-                    Submit for AI Evaluation
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Disabled / Pre-filled State</CardTitle>
-                <CardDescription>Immutable view for graded evaluation responses</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  disabled
-                  defaultValue="Long-term potentiation (LTP) is a persistent strengthening of synapses based on recent patterns of activity. These are patterns of synaptic activity that produce a long-lasting increase in signal transmission between two neurons."
-                  helperText="Graded response locked for review"
-                  rows={4}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* 5. PROGRESS & SKELETON LOADERS */}
-        <section className="space-y-4">
-          <div className="border-b border-border-dim pb-3">
-            <h2 className="text-lg font-semibold text-text-primary">
-              5. Progress Bar & Skeleton Loaders
-            </h2>
-            <p className="text-xs text-text-secondary">
-              Radix-backed accessible progress bars and shimmer gradient skeletons.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Progress */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Accessible Progress</CardTitle>
-                  <span className="font-mono text-xs text-accent-primary font-bold">
-                    {progressVal}%
-                  </span>
-                </div>
-                <CardDescription>ARIA compliant (role=&quot;progressbar&quot;) with smooth transitions</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-text-secondary">
-                    <span>Deck Mastery</span>
-                    <span>{progressVal}% Complete</span>
-                  </div>
-                  <Progress value={progressVal} />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-text-secondary">
-                    <span>AI Knowledge Accuracy</span>
-                    <span className="text-success font-medium">92%</span>
-                  </div>
-                  <Progress value={92} indicatorColor="bg-success" />
-                </div>
-
-                <div className="flex items-center gap-2 pt-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setProgressVal((v) => Math.max(0, v - 15))}
-                  >
-                    - 15%
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setProgressVal((v) => Math.min(100, v + 15))}
-                  >
-                    + 15%
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setProgressVal(100)}
-                  >
-                    Complete (100%)
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Skeleton Shimmer */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Shimmer Skeletons</CardTitle>
-                  <Badge variant="accent" size="sm">2s infinite</Badge>
-                </div>
-                <CardDescription>Continuous linear gradient animation for loading layouts</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Skeleton variant="circular" className="h-10 w-10 shrink-0" />
-                  <div className="space-y-2 flex-1">
-                    <Skeleton variant="text" className="h-4 w-3/4" />
-                    <Skeleton variant="text" className="h-3 w-1/2" />
-                  </div>
-                </div>
-
-                <div className="space-y-2 pt-2 border-t border-border-dim">
-                  <Skeleton variant="rectangular" className="h-16 w-full" />
-                  <div className="grid grid-cols-3 gap-2">
-                    <Skeleton variant="rectangular" className="h-8" />
-                    <Skeleton variant="rectangular" className="h-8" />
-                    <Skeleton variant="rectangular" className="h-8" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* 6. NOTICE PRIMITIVES */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border-dim pb-3">
-            <div>
-              <h2 className="text-lg font-semibold text-text-primary">
-                6. Notice / Alert Primitive
-              </h2>
-              <p className="text-xs text-text-secondary">
-                Semantic contextual alerts (`info`, `success`, `warning`, `error`) with action slots and dismiss handlers.
-              </p>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                setActiveNotices({ info: true, success: true, warning: true, error: true })
-              }
-            >
-              Reset Notices
-            </Button>
-          </div>
-
-          <div className="space-y-3">
-            {activeNotices.info && (
-              <Notice
-                variant="info"
-                title="Spaced Repetition Algorithm Synchronized"
-                onClose={() => setActiveNotices((s) => ({ ...s, info: false }))}
-                action={
-                  <Button size="sm" variant="outline">
-                    View Schedule
-                  </Button>
-                }
-              >
-                FSRS scheduling model has updated your review queues based on optimal forgetting curve parameters.
-              </Notice>
-            )}
-
-            {activeNotices.success && (
-              <Notice
-                variant="success"
-                title="Active Recall Session Mastered"
-                onClose={() => setActiveNotices((s) => ({ ...s, success: false }))}
-              >
-                All 24 flashcard concept questions were evaluated with an average confidence score of 96%.
-              </Notice>
-            )}
-
-            {activeNotices.warning && (
-              <Notice
-                variant="warning"
-                title="Memory Decay Alert"
-                onClose={() => setActiveNotices((s) => ({ ...s, warning: false }))}
-                action={
-                  <Button size="sm" variant="secondary">
-                    Review 5 Overdue Cards
-                  </Button>
-                }
-              >
-                5 concepts in &ldquo;Cellular Respiration&rdquo; are predicted to drop below the 80% recall threshold within 12 hours.
-              </Notice>
-            )}
-
-            {activeNotices.error && (
-              <Notice
-                variant="error"
-                title="Groq API Rate Limit Exceeded"
-                onClose={() => setActiveNotices((s) => ({ ...s, error: false }))}
-                action={
-                  <Button size="sm" variant="danger">
-                    Retry Request
-                  </Button>
-                }
-              >
-                Unable to synthesize study prompt. Falling back to local heuristic cache.
-              </Notice>
-            )}
-          </div>
+          )}
         </section>
       </main>
     </div>
