@@ -10,6 +10,7 @@ export interface FlashcardDeckProps {
   cards: Flashcard[];
   deckTitle: string;
   onDeckComplete?: (stats: { masteredCount: number; reviewCount: number }) => void;
+  onMasteryChange?: (cardId: string, status: MasteryStatus) => void;
   onResetDeck?: () => void;
 }
 

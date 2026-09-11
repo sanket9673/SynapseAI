@@ -9,19 +9,23 @@ export interface Flashcard {
 export interface QuizQuestion {
   id: string;
   question: string;
+  text?: string;
   options: [string, string, string, string]; // Exactly 4 options
   correctOptionIndex: 0 | 1 | 2 | 3;
+  correctAnswer?: string;
   explanation: string;
 }
 
 export interface StudySet {
   id: string;
   title: string;
+  topic?: string;
   summary: string;
   createdAt: number;
   sourceTextSnippet: string;
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
+  questions?: QuizQuestion[];
 }
 
 export interface ApiSuccessResponse<T> {

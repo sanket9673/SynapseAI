@@ -13,6 +13,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
   cards,
   deckTitle,
   onDeckComplete,
+  onMasteryChange,
   onResetDeck,
 }) => {
   const [cardOrder, setCardOrder] = useState<number[]>(() => cards.map((_, i) => i));
@@ -69,6 +70,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         return nextMap;
       });
 
+      onMasteryChange?.(activeCard.id, status);
+
       // Satisfying micro-delay (250ms) before auto-advancing
       setTimeout(() => {
         if (currentIndex < cardOrder.length - 1) {
@@ -86,7 +89,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({
         }
       }, 250);
     },
-    [activeCard, currentIndex, cardOrder.length, handleNext, onDeckComplete, stats, masteryMap]
+    [activeCard, currentIndex, cardOrder.length, handleNext, onDeckComplete, onMasteryChange, stats, masteryMap]
   );
 
   const handleToggleMasteryShortcut = useCallback(() => {
