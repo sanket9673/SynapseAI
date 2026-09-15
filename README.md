@@ -1,278 +1,242 @@
-# ⚡ SYNAPSE — AI-Native Active Recall & Pedagogical Synthesis Engine
+# Synapse — Active Recall & Study Assistant
 
-> Built for the **FLAM AI (flamapp.ai)** Technical Assessment.  
-> An ultra-responsive, resilient study assistant that transforms raw lecture notes, transcripts, or complex topics into permanent memory via **3D Active Recall Flashcards**, **Pedagogical 4-Option Quizzes**, **Targeted Remediation / Re-Testing**, and **Raycast-Grade Keyboard Navigation**.
-
----
-
-## 📑 Table of Contents
-1. [Executive Overview & Core Features](#-executive-overview--core-features)
-2. [System Architecture & Interaction Loops](#-system-architecture--interaction-loops)
-3. [Setup & Local Run Guide](#-setup--local-run-guide)
-4. [Offline / Zero-Cost Mock Mode](#-offline--zero-cost-mock-mode)
-5. [AI Pipeline Resilience & Error Recovery](#-ai-pipeline-resilience--error-recovery)
-6. [Design System & Accessibility (a11y)](#-design-system--accessibility-a11y)
-7. [Procedural Web Audio Engine](#-procedural-web-audio-engine)
-8. [Comprehensive Keyboard Shortcuts](#-comprehensive-keyboard-shortcuts)
-9. [Automated Verification & Test Suite](#-automated-verification--test-suite)
-10. [AI Usage Disclosure](#-ai-usage-disclosure)
-11. [Engineering Time Breakdown](#-engineering-time-breakdown)
-12. [Known Limitations & Roadmap](#-known-limitations--roadmap)
+Built for the FLAM AI technical assessment. Synapse is a study tool designed to turn unstructured notes and study text into active recall flashcards and practice quizzes, featuring keyboard-driven navigation, weak-point remediation, and offline mock support.
 
 ---
 
-## 🎯 Executive Overview & Core Features
-
-Synapse delivers sub-300ms interaction feedback and a dark-mode first design inspired by **Linear** and **Raycast**.
-
-### 🌟 Key Capabilities
-- **🧠 Multi-Provider AI Synthesis**: High-speed schema-enforced synthesis via **Groq (Llama 3.3 70B Versatile)**, **OpenAI (GPT-4o-mini)** fallback, or instant offline mock mode.
-- **🃏 Hardware-Accelerated 3D Flashcards**: 3D CSS perspective card flips with smooth spring physics (`stiffness: 260, damping: 22`), progressive hint reveals, and mastery status tagging (`Got It` vs. `Needs Review`).
-- **📝 Interactive Quiz Engine**: 4-option multiple-choice quizzes with distractor generation, sub-50ms visual feedback, pedagogical explanation cards, and full keyboard control (`1-4`, `A-D`, `Enter`).
-- **🎯 Targeted Weakness Remediation**: Automated isolation of missed quiz questions and flagged flashcards into a focused drill loop until 100% mastery is achieved.
-- **⚡ Raycast-Grade Command Palette (`⌘+K` / `Ctrl+K`)**: Global search dialog with fuzzy filtering across commands, categories, and keywords, paired with arrow key navigation.
-- **🎹 Zero-Asset Procedural Web Audio**: Native Web Audio API synthesizer generating soft, crisp auditory feedback for card flips, correct/incorrect picks, and completion chimes with `localStorage`-backed mute persistence.
-- **💾 Local Storage Persistence & Deck History**: Seamless browser storage for study decks, session tracking, fast search/restoration, and quota-safe trimming.
-- **📦 Multi-Format Deck Export**: One-click export to structured **Markdown** notes or **Anki-compatible TSV** formats with tab-separated card and quiz items.
+## Table of Contents
+1. [Overview & Core Features](#overview--core-features)
+2. [System Architecture](#system-architecture)
+3. [Setup & Local Development](#setup--local-development)
+4. [Offline Mock Mode](#offline-mock-mode)
+5. [AI Pipeline & Error Recovery](#ai-pipeline--error-recovery)
+6. [Design System & Accessibility](#design-system--accessibility)
+7. [Web Audio Synthesizer](#web-audio-synthesizer)
+8. [Keyboard Shortcuts](#keyboard-shortcuts)
+9. [Testing & Verification](#testing--verification)
+10. [AI Usage Disclosure](#ai-usage-disclosure)
+11. [Engineering Time Breakdown](#engineering-time-breakdown)
+12. [Roadmap & Limitations](#roadmap--limitations)
 
 ---
 
-## 🏛 System Architecture & Interaction Loops
+## Overview & Core Features
+
+Synapse converts raw study notes into structured decks using schema-enforced LLM synthesis, backed by local storage and keyboard-first workflows.
+
+### Key Features
+- **Multi-Provider AI Pipeline**: Primary generation through Groq (Llama 3.3 70B Versatile), fallback to OpenAI (GPT-4o-mini), and a zero-latency offline mock mode.
+- **3D Active Recall Flashcards**: CSS perspective card flip interface with spring physics, progressive hints, and self-assessment tagging (Mastered vs. Review).
+- **Multiple-Choice Quiz Engine**: 4-option questions with generated distractors, instant answer validation, conceptual explanations, and full keyboard selection.
+- **Targeted Weak-Point Retesting**: Automatically isolates incorrectly answered questions and flagged flashcards into a focused practice queue until resolved.
+- **Command Palette (Cmd+K / Ctrl+K)**: System-wide command dialog supporting fuzzy search, category filtering, and direct action execution.
+- **Synthesized Web Audio**: Lightweight Web Audio API synthesizer for tactile auditory feedback on flips, correct/incorrect selections, and session completion, with persistent mute control.
+- **Deck History & Local Persistence**: Browser-local deck storage with restoration, search, and quota handling.
+- **Export Options**: Export decks to structured Markdown or Anki-compatible TSV format.
+
+---
+
+## System Architecture
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                CLIENT BROWSER (Next.js 14)                             │
-├────────────────────────┬─────────────────────────────┬─────────────────────────────────┤
-│    Input Controller    │     Study Workspace         │        Persistence & Audio      │
-│  - PromptInput         │  - 3D FlashcardDeck         │  - LocalStorage Engine          │
-│  - Topic Pills Presets │  - Interactive QuizEngine   │  - Web Audio Synthesizer        │
-│  - useAIGenerate Hook  │  - Remediation RetestEngine │  - Command Palette (⌘K)         │
-└───────────┬────────────┴──────────────┬──────────────┴────────────────┬────────────────┘
-            │ AbortController &         │ Keyboard Hotkeys              │ Mute Sync &
-            │ Monotonic Request IDs     │ (Space, 1-4, M, R, ?)         │ Export Handlers
-            ▼                           ▼                               ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                       SERVERLESS AI PIPELINE (/api/generate)                           │
-├────────────────────────┬─────────────────────────────┬─────────────────────────────────┤
-│   Request Sanitizer    │      LLM Orchestration      │   Resilience & Normalization    │
-│  - Max char truncation │  - Groq LLaMA 3.3 70B       │  - Markdown fence stripper      │
-│  - System Prompt Form  │  - OpenAI GPT-4o-mini       │  - jsonrepair AST recovery      │
-│  - Temperature / Top-P │  - Deterministic Mock Mode  │  - Zod Schema & ID Injection    │
-└────────────────────────┴─────────────────────────────┴─────────────────────────────────┘
++----------------------------------------------------------------------------------------+
+|                                CLIENT BROWSER (Next.js 14)                             |
++------------------------+-----------------------------+---------------------------------+
+|    Input Controller    |     Study Workspace         |        Persistence & Audio      |
+|  - PromptInput         |  - 3D FlashcardDeck         |  - LocalStorage Engine          |
+|  - Topic Presets       |  - Interactive QuizEngine   |  - Web Audio Synthesizer        |
+|  - useAIGenerate Hook  |  - Remediation RetestEngine |  - Command Palette (Cmd+K)      |
++-----------+------------+--------------+--------------+----------------+----------------+
+            | AbortController &         | Keyboard Hotkeys              | Mute Sync &
+            | Request Tracking          | (Space, 1-4, M, R, ?)         | Export Handlers
+            v                           v                               v
++----------------------------------------------------------------------------------------+
+|                       SERVERLESS AI PIPELINE (/api/generate)                           |
++------------------------+-----------------------------+---------------------------------+
+|   Request Sanitizer    |      LLM Orchestration      |   Resilience & Normalization    |
+|  - Char validation     |  - Groq LLaMA 3.3 70B       |  - Markdown fence stripper      |
+|  - System Prompt Form  |  - OpenAI GPT-4o-mini       |  - jsonrepair AST recovery      |
+|  - Low Temperature     |  - Deterministic Mock Mode  |  - Zod Schema & ID Injection    |
++------------------------+-----------------------------+---------------------------------+
 ```
 
-### Sub-300ms Feedback Loop
-1. User enters topic or notes ➔ Triggers `useAIGenerate` with `AbortController` cancellation of any inflight tasks.
-2. Serverless route queries Groq (averaging 200-450ms TTFT) with temperature 0.3.
-3. Raw output is stripped of Markdown code blocks, passed to `jsonrepair` AST parser, verified by Zod, and given monotonic fallback IDs.
-4. Client receives structured payload, auto-persists to `localStorage`, and mounts active recall decks.
+### Request Flow
+1. User submits text via `PromptInput`, triggering `useAIGenerate` with an `AbortController` to cancel any inflight requests.
+2. The `/api/generate` route queries Groq with strict JSON output formatting.
+3. Raw output passes through a markdown stripper, AST-level repair (`jsonrepair`), and Zod schema validation with automatic ID generation.
+4. The client receives validated data, saves the deck to `localStorage`, and updates UI state.
 
 ---
 
-## 🚀 Setup & Local Run Guide
+## Setup & Local Development
 
-### 1. Prerequisites
-- **Node.js**: `v18.17.0+` or `v20.x`
-- **npm**: `v9.x+` or `v10.x`
+### Prerequisites
+- Node.js 18.17.0+ or 20.x
+- npm 9.x+ or 10.x
 
-### 2. Clone and Install Dependencies
+### Installation
 ```bash
 git clone https://github.com/sanket9673/SynapseAI.git
 cd Synapse
 npm install
 ```
 
-### 3. Configure Environment Variables
-Copy the example environment file to `.env.local`:
+### Environment Configuration
+Copy the example environment file:
 ```bash
 cp .env.example .env.local
 ```
 
-Configure your API keys in `.env.local`:
+Set your configuration in `.env.local`:
 ```env
-# Primary LLM Provider: "groq" (recommended), "openai", or "mock"
+# Primary Provider: "groq", "openai", or "mock"
 AI_PROVIDER=groq
 
-# Groq API Key (Free tier available at https://console.groq.com)
-GROQ_API_KEY=gsk_your_groq_api_key_here
+# Groq API Key (https://console.groq.com)
+GROQ_API_KEY=gsk_your_key_here
 
-# Groq Model ID (Defaults to high-throughput openai/gpt-oss-120b or openai/gpt-oss-20b)
-GROQ_MODEL=openai/gpt-oss-120b
-
-# OpenAI API Key (Optional fallback)
-OPENAI_API_KEY=sk-your_openai_api_key_here
+# OpenAI API Key (Optional secondary fallback)
+OPENAI_API_KEY=sk_your_key_here
 ```
 
-### 4. Start Development Server
+### Run Locally
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:4000](http://localhost:4000) (or configured port) in your browser.
 
 ---
 
-## 🧪 Offline / Zero-Cost Mock Mode
+## Offline Mock Mode
 
-To run Synapse with **zero API keys** and **no credit card/network dependencies**:
+To run Synapse without API keys or network dependencies:
 
-### Option A: Via Environment Variable
-In `.env.local`, set:
+### Via Environment Variable
+In `.env.local`:
 ```env
 AI_PROVIDER=mock
 ```
-Restart `npm run dev`. All generations will instantly return deterministic, topic-tailored study decks (Cellular Respiration, Quantum Computing, etc.) in ~250ms simulated latency.
+Generations will immediately return deterministic, topic-matched study sets (e.g., Neuroscience, Machine Learning, Cellular Biology) in ~100ms.
 
-### Option B: Via UI Mock Fallback Button
-If an API key expires, fails, or rate-limits (429), Synapse renders a **"Try with Offline Mock Mode"** button on the error screen, allowing seamless zero-configuration grading.
-
----
-
-## 🛡 AI Pipeline Resilience & Error Recovery
-
-LLMs can output malformed JSON, truncated strings, or unexpected Markdown code blocks. Synapse implements a **5-stage resilience pipeline**:
-
-1. **Markdown Fence Stripping**: Regex cleaners remove prefix ```` ```json ```` and trailing ```` ``` ```` tags or conversational intro phrases.
-2. **AST JSON Repair (`jsonrepair`)**: Fixes missing commas, unescaped quotes, trailing brackets, and half-closed objects.
-3. **Zod Strict Schema Validation**: Validates the payload against `StudySetSchema`:
-   - Enforces `flashcards` (minimum 2 items, front/back/hints).
-   - Enforces `quiz` (minimum 2 items, 4 options, `correctOptionIndex` within bounds `0..3`).
-4. **Zod Auto-Repair Heuristic**: If the LLM generates string option labels (e.g. `"A"` or `"C"`) instead of numeric indices, an automatic normalizer converts `"A" ➔ 0`, `"B" ➔ 1`, `"C" ➔ 2`, `"D" ➔ 3`.
-5. **Monotonic ID & Missing Field Infill**: Missing IDs are deterministically generated with `card-${nanoid()}` and `quiz-${nanoid()}`.
+### Via In-App Toggle / Fallback
+- Toggle the **Offline Mock** switch directly on the input card.
+- If upstream API calls fail or hit rate limits (429), the error screen presents a direct one-click fallback to mock mode.
 
 ---
 
-## 🎨 Design System & Accessibility (a11y)
+## AI Pipeline & Error Recovery
 
-### Design Philosophy
-- **Palette**: Pitch black background (`#0A0A0C`), elevated slate surfaces (`#121216`), bright violet accents (`#6366F1`), emerald success (`#10B981`), and amber warning (`#F59E0B`).
-- **Typography**: Clean monospace badges (`JetBrains Mono` / `ui-monospace`) paired with high-legibility sans-serif bodies (`Inter`).
-- **Focus Rings**: High-contrast, accessible `:focus-visible` rings with offset indicators (`focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-app`).
-- **ARIA & Semantic HTML**: Full `role="dialog"`, `role="tablist"`, `role="tab"`, `aria-selected`, `aria-live`, and `aria-label` landmarks on all interactive controls.
+To prevent failures caused by imperfect model outputs, the pipeline uses a defensive multi-step repair strategy:
 
----
-
-## 🔊 Procedural Web Audio Engine
-
-Synapse features a **zero-asset, client-side Web Audio synthesizer** in `src/lib/sound.ts`:
-- **Audio Autoplay Compliance**: Lazy-initializes and safely resumes `AudioContext` on the first user interaction.
-- **Soft Gain Levels**: Gain values strictly capped between `0.08` and `0.15` for crisp, non-fatiguing feedback.
-- **Sound Profile**:
-  - `playFlip()`: 15ms bandpass-filtered noise burst simulating tactile paper flip.
-  - `playCorrect()`: Dual-oscillator ascending chime ($D_5 \to A_5$, 587.33Hz $\to$ 880Hz).
-  - `playIncorrect()`: Gentle descending marimba thud (220Hz $\to$ 160Hz).
-  - `playComplete()`: Harmonious 4-note C-Major triad celebration ($C_5, E_5, G_5, C_6$).
-- **Mute Persistence**: Synced with `localStorage` key `'synapse_audio_muted'` and toggleable via header button, command palette, or hotkey.
+1. **Markdown Fence Stripping**: Cleans leading ```` ```json ```` and trailing ```` ``` ```` tags or accidental commentary text.
+2. **AST JSON Repair (`jsonrepair`)**: Resolves syntax errors such as missing commas, unescaped quotes, trailing brackets, and half-closed objects.
+3. **Zod Strict Validation**: Validates the payload structure against `StudySetZodSchema` (minimum 2 flashcards, minimum 1 quiz question with 4 options and valid index).
+4. **Heuristic Self-Healing**:
+   - Converts non-numeric option markers to integer indices (0-3).
+   - If a quiz question has fewer than 4 options, pads it with standard fallback choices (e.g. "None of the above").
+   - Clamps out-of-bounds indices safely to valid options.
+5. **UUID & Timestamp Injection**: Automatically generates missing UUIDs and creation timestamps if omitted by the model.
 
 ---
 
-## ⌨ Comprehensive Keyboard Shortcuts
+## Design System & Accessibility
 
-| Context | Shortcut | Action Description |
-| :--- | :--- | :--- |
-| **Global** | <kbd>⌘</kbd>+<kbd>K</kbd> / <kbd>Ctrl</kbd>+<kbd>K</kbd> | Open Command Palette |
-| **Global** | <kbd>?</kbd> / <kbd>Shift</kbd>+<kbd>/</kbd> | Open Keyboard Shortcuts HUD |
-| **Global** | <kbd>⌘</kbd>+<kbd>Enter</kbd> | Trigger AI Deck Synthesis |
-| **Global** | <kbd>Esc</kbd> | Close Palette / Modal / History Drawer |
-| **Flashcards** | <kbd>Space</kbd> | Flip Active Flashcard |
-| **Flashcards** | <kbd>→</kbd> / <kbd>←</kbd> | Next / Previous Card |
-| **Flashcards** | <kbd>M</kbd> | Mark Card as **Mastered** |
-| **Flashcards** | <kbd>R</kbd> | Mark Card as **Needs Review** |
-| **Flashcards** | <kbd>I</kbd> | Reveal Pedagogical Hint |
-| **Quiz** | <kbd>1</kbd> – <kbd>4</kbd> or <kbd>A</kbd> – <kbd>D</kbd> | Select Answer Option |
-| **Quiz** | <kbd>Enter ↵</kbd> | Submit Answer / Advance Question |
+- **Palette**: Dark canvas (`#090A0F`), surface layers (`#11131A`), border definitions, and subtle indigo accents (`#6366F1`).
+- **Typography**: `Inter` for body copy paired with `JetBrains Mono` for metadata, keyboard hints, and tags.
+- **Dynamic OS Key Hints**: Automatically detects user OS and renders native modifiers (`Cmd` on macOS/iOS, `Ctrl` on Windows/Linux).
+- **Focus & ARIA**: Visible focus rings with high-contrast offsets, descriptive labels, and standard dialog/tablist landmarks.
 
 ---
 
-## 🧪 Automated Verification & Test Suite
+## Web Audio Synthesizer
 
-Synapse contains a comprehensive unit test suite covering UI primitives, generation hooks, AI pipelines, state machines, storage persistence, and the command palette.
+The client audio engine in `src/lib/sound.ts` uses the browser Web Audio API:
+- **Autoplay Handling**: Initializes and resumes `AudioContext` upon the first user interaction.
+- **Volume**: Gain levels are capped between `0.08` and `0.15` for subtle, non-distracting feedback.
+- **Audio Cues**:
+  - `playFlip()`: Short filtered noise burst simulating a card turn.
+  - `playCorrect()`: Ascending two-tone chime (587Hz to 880Hz).
+  - `playIncorrect()`: Low descending tone (220Hz to 160Hz).
+  - `playComplete()`: Four-note chord (C5, E5, G5, C6).
+- **Mute Control**: Persisted to `localStorage` under `synapse_audio_muted` and toggleable in the header or command palette.
 
-### Running Test Commands
+---
+
+## Keyboard Shortcuts
+
+| Context | Shortcut (Mac) | Shortcut (Windows/Linux) | Action |
+| :--- | :--- | :--- | :--- |
+| Global | Cmd + K | Ctrl + K | Open Command Palette |
+| Global | ? | ? | Open Keyboard Shortcuts Reference |
+| Global | Cmd + Enter | Ctrl + Enter | Generate Study Set from Text |
+| Global | Esc | Esc | Close Dialogs / Drawers |
+| Flashcards | Space | Space | Flip Current Flashcard |
+| Flashcards | Right / Left Arrow | Right / Left Arrow | Next / Previous Card |
+| Flashcards | M | M | Mark as Mastered |
+| Flashcards | R | R | Mark for Review |
+| Flashcards | I | I | Reveal Hint |
+| Quiz | 1 - 4 or A - D | 1 - 4 or A - D | Select Option |
+| Quiz | Enter | Enter | Submit Answer / Next Question |
+
+---
+
+## Testing & Verification
+
+The project includes unit and integration tests covering UI primitives, AI parsing, generation hooks, storage, and retest workflows.
+
+### Commands
 ```bash
-# Run Vitest test suite
-npm run test
+# Run unit and integration tests
+npm test
 
-# Run TypeScript type checker
+# Run TypeScript type check
 npm run typecheck
 
-# Run Next.js linter
+# Run linter
 npm run lint
 
-# Run Production Build
+# Run production build
 npm run build
 ```
 
-### Test Suite Results
-```text
-✓ src/__tests__/storage.test.ts (5 tests)
-✓ src/__tests__/useAIGenerate.test.ts (6 tests)
-✓ src/__tests__/ui-primitives.test.tsx (16 tests)
-✓ src/__tests__/CommandPalette.test.tsx (7 tests)
-✓ src/__tests__/PromptInput.test.tsx (7 tests)
-✓ src/__tests__/QuizEngine.test.tsx (6 tests)
-✓ src/__tests__/ai-pipeline.test.ts (18 tests)
-✓ src/__tests__/ExportModal.test.tsx (4 tests)
-✓ src/__tests__/FlashcardDeck.test.tsx (8 tests)
-✓ src/__tests__/RetestEngine.test.tsx (4 tests)
-✓ src/tests/smoke.test.tsx (2 tests)
-✓ src/tests/utils.test.ts (3 tests)
-
-Test Files: 12 passed (12)
-Tests:      86 passed (86)
-Coverage:   100% core domain logic
-```
-
 ---
 
-## 🤖 AI Usage Disclosure
+## AI Usage Disclosure
 
-In compliance with the FLAM AI evaluation guidelines, AI tooling was utilized transparently during development:
+In line with assessment requirements, AI tools were utilized during development:
 
-| Area | Tooling Used | Purpose & Impact |
+| Area | Tooling | Usage Details |
 | :--- | :--- | :--- |
-| **Scaffolding & Boilerplate** | Antigravity AI / Claude 3.5 Sonnet | Initial Tailwind token mapping, Lucide icon wiring, and TypeScript type interfaces. |
-| **Regex & String Repair** | Antigravity AI | Developing robust regex parsing patterns for Markdown fence stripping and Anki TSV formatting. |
-| **Test Case Expansion** | Antigravity AI | Generating edge-case mock payloads (e.g., malformed JSON with unclosed arrays, out-of-bound indices). |
-| **Domain Logic & Physics** | Human Guided | Card flip 3D matrix math, spring physics tuning, Web Audio frequency synthesis curves, and weakness remediation state machine design. |
+| Boilerplate & Types | Antigravity IDE / Claude | Generating initial TypeScript interfaces and baseline Tailwind configurations. |
+| Regex & Normalization | Antigravity IDE | Regex pattern drafts for markdown fence stripping and TSV formatting. |
+| Edge Case Payloads | Antigravity IDE | Creating test fixtures for truncated JSON and schema edge cases. |
+| Core Logic & Architecture | Manual Engineering | Component state machines, spring physics configuration, Web Audio oscillator curves, weakness queue logic, and multi-provider fallback. |
 
 ---
 
-## ⏱ Engineering Time Breakdown
+## Engineering Time Breakdown
 
-Total Time Spent: **~7.5 Hours** (under the 8-hour assessment cap)
+Total Time: ~7.5 Hours
 
-```
-┌─────────────────────────────────────────────────────────────┬──────────┐
-│ Phase / Workstream                                          │ Time     │
-├─────────────────────────────────────────────────────────────┼──────────┤
-│ 1. Project Scaffolding, Tooling & Design Primitives         │ 45 mins  │
-│ 2. Serverless AI Pipeline, Error Recovery & JSON Normalizer │ 60 mins  │
-│ 3. Prompt Input Controller, Presets & Stepped Skeletons    │ 40 mins  │
-│ 4. 3D Flashcard Deck, Spring Physics & Keyboard Controls    │ 55 mins  │
-│ 5. Interactive Quiz Engine & Score Summary Analytics        │ 50 mins  │
-│ 6. Targeted Weakness Isolation & Remediation Loop           │ 60 mins  │
-│ 7. Local Persistence, Deck History & Anki/Markdown Export   │ 50 mins  │
-│ 8. Command Palette, Shortcuts HUD & Web Audio Synthesizer   │ 45 mins  │
-│ 9. Comprehensive Testing, a11y Audits & Documentation       │ 45 mins  │
-├─────────────────────────────────────────────────────────────┼──────────┤
-│ TOTAL                                                       │ ~7.5 hrs │
-└─────────────────────────────────────────────────────────────┴──────────┘
-```
+| Phase | Duration | Focus Areas |
+| :--- | :--- | :--- |
+| 1. Scaffolding & Design Primitives | ~45 mins | Next.js 14 setup, Tailwind tokens, base UI primitive suite |
+| 2. AI Pipeline & Normalization | ~60 mins | Route handler, Groq/OpenAI orchestration, jsonrepair, Zod validation |
+| 3. Input Controller & Skeletons | ~40 mins | PromptInput, character budget, topic presets, loading states |
+| 4. 3D Flashcard Deck & Physics | ~55 mins | Perspective transforms, spring physics, keyboard bindings |
+| 5. Quiz Engine & Scoring | ~50 mins | 4-option question layout, instant feedback, explanation views |
+| 6. Weak-Point Remediation Loop | ~60 mins | Error collection, retest state machine, queue drain logic |
+| 7. Local Persistence & Export | ~50 mins | LocalStorage engine, history drawer, Markdown/TSV exporters |
+| 8. Command Palette & Web Audio | ~45 mins | Cmd+K dialog, fuzzy search, Web Audio oscillator synthesis |
+| 9. Testing & Documentation | ~45 mins | Vitest test suites, type checking, README documentation |
 
 ---
 
-## 🔭 Known Limitations & Roadmap
+## Roadmap & Limitations
 
-Given the 8-hour assessment constraint, several production-grade enhancements are scheduled for the next release cycle:
+Key improvements planned for subsequent iterations:
 
-1. **Streaming JSON Output**: Integrating Server-Sent Events (SSE) / AI SDK streaming to display flashcards as they are synthesized token-by-token.
-2. **Cloud Sync & Supabase Integration**: Multi-device synchronization and public study deck sharing URLs.
-3. **SM-2 Spaced Repetition Scheduling**: Upgrading the current session-based mastery model to full SuperMemo-2 / FSRS interval calculation algorithms.
-4. **Audio Accent Customization**: Pitch slider and sound preset packs (Retro 8-bit, Minimal Click, Lo-Fi Bell).
-5. **PDF & YouTube Transcript Uploader**: Direct document and video URL parsing via multimodal LLMs.
-
----
-
-<p align="center">
-  <sub>Crafted with precision for <strong>FLAM AI</strong>.</sub>
-</p>
+1. **Streaming Output**: Stream flashcards incrementally using SSE / AI SDK.
+2. **Spaced Repetition Scheduling**: Integrate FSRS or SM-2 algorithms for scheduled multi-day review intervals.
+3. **Cloud Synchronization**: User accounts and database-backed cross-device syncing.
+4. **Document Ingestion**: Support direct PDF, EPUB, and YouTube transcript imports.
