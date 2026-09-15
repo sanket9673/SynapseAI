@@ -1,5 +1,8 @@
+"use client";
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatShortcutKey, useIsMac } from "@/lib/platform";
 
 export interface KbdProps extends React.HTMLAttributes<HTMLElement> {
   keys?: string[];
@@ -7,6 +10,8 @@ export interface KbdProps extends React.HTMLAttributes<HTMLElement> {
 
 export const Kbd = React.forwardRef<HTMLElement, KbdProps>(
   ({ className, keys, children, ...props }, ref) => {
+    const isMac = useIsMac();
+
     return (
       <kbd
         ref={ref}
@@ -17,12 +22,17 @@ export const Kbd = React.forwardRef<HTMLElement, KbdProps>(
         {...props}
       >
         {keys && keys.length > 0 ? (
-          keys.map((key, index) => (
-            <React.Fragment key={index}>
-              {index > 0 && <span className="text-smoke">+</span>}
-              <span>{key}</span>
-            </React.Fragment>
-          ))
+          keys.map((key, index) => {
+            const formatted = formatShortcutKey(key, isMac);
+            return (
+              <React.Fragment key={index}>
+                {index > 0 && <span className="text-smoke">+</span>}
+                <span>{formatted}</span>
+              </React.Fragment>
+            );
+          })
+        ) : typeof children === "string" ? (
+          formatShortcutKey(children, isMac)
         ) : (
           children
         )}

@@ -1,5 +1,8 @@
+"use client";
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatShortcutKey, useIsMac } from "@/lib/platform";
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: string;
@@ -9,10 +12,13 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, error, helperText, shortcutHint, id, ...props }, ref) => {
+    const isMac = useIsMac();
     const generatedId = React.useId();
     const textareaId = id || generatedId;
     const errorId = error ? `${textareaId}-error` : undefined;
     const helperId = helperText ? `${textareaId}-helper` : undefined;
+
+    const formattedShortcut = shortcutHint ? formatShortcutKey(shortcutHint, isMac) : undefined;
 
     return (
       <div className="w-full space-y-1.5">
@@ -34,10 +40,10 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             )}
             {...props}
           />
-          {shortcutHint && (
+          {formattedShortcut && (
             <div className="pointer-events-none absolute bottom-3 right-3 flex items-center">
               <span className="rounded-md border border-ash/80 bg-paper-white px-2 py-0.5 font-mono text-[11px] font-semibold text-slate">
-                {shortcutHint}
+                {formattedShortcut}
               </span>
             </div>
           )}

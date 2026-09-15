@@ -126,7 +126,7 @@ describe("UI Primitives Component Suite", () => {
       );
 
       expect(screen.getByText("Maximum 500 words")).toBeInTheDocument();
-      expect(screen.getByText("⌘ + Enter")).toBeInTheDocument();
+      expect(screen.getByText(/(⌘|Ctrl) \+ Enter/)).toBeInTheDocument();
     });
   });
 
@@ -215,7 +215,7 @@ describe("UI Primitives Component Suite", () => {
 
     it("renders Kbd with keys array", () => {
       render(<Kbd keys={["⌘", "Shift", "P"]} />);
-      expect(screen.getByText("⌘")).toBeInTheDocument();
+      expect(screen.getByText(/(⌘|Ctrl)/)).toBeInTheDocument();
       expect(screen.getByText("Shift")).toBeInTheDocument();
       expect(screen.getByText("P")).toBeInTheDocument();
     });
