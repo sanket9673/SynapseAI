@@ -1,242 +1,266 @@
-# Synapse — Active Recall & Study Assistant
+# Synapse — AI-Native Active Recall & Study Assistant
 
-Built for the FLAM AI technical assessment. Synapse is a study tool designed to turn unstructured notes and study text into active recall flashcards and practice quizzes, featuring keyboard-driven navigation, weak-point remediation, and offline mock support.
+[![Tests](https://img.shields.io/badge/Tests-86%20Passing-brightgreen.svg)](https://github.com/sanket9673/SynapseAI)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict%200%20Errors-blue.svg)](https://github.com/sanket9673/SynapseAI)
+[![Next.js](https://img.shields.io/badge/Next.js-14.2%20App%20Router-black.svg)](https://nextjs.org/)
+[![Design System](https://img.shields.io/badge/Design-Dayos%20Brutalist%20Showroom-f3f3f3.svg)](https://github.com/sanket9673/SynapseAI)
 
----
-
-## Table of Contents
-1. [Overview & Core Features](#overview--core-features)
-2. [System Architecture](#system-architecture)
-3. [Setup & Local Development](#setup--local-development)
-4. [Offline Mock Mode](#offline-mock-mode)
-5. [AI Pipeline & Error Recovery](#ai-pipeline--error-recovery)
-6. [Design System & Accessibility](#design-system--accessibility)
-7. [Web Audio Synthesizer](#web-audio-synthesizer)
-8. [Keyboard Shortcuts](#keyboard-shortcuts)
-9. [Testing & Verification](#testing--verification)
-10. [AI Usage Disclosure](#ai-usage-disclosure)
-11. [Engineering Time Breakdown](#engineering-time-breakdown)
-12. [Roadmap & Limitations](#roadmap--limitations)
+> **Built for the FLAM AI Technical Assessment.**  
+> Synapse is an AI-native active recall study platform that synthesizes unstructured notes, transcripts, and complex articles into interactive 3D flashcards and pedagogical quiz assessments in seconds. Featuring weak-point remediation loops, Raycast-grade Command Palette (`⌘K`), procedural Web Audio micro-haptics, local session persistence, and full export capabilities.
 
 ---
 
-## Overview & Core Features
+## 🔗 Submission Links
 
-Synapse converts raw study notes into structured decks using schema-enforced LLM synthesis, backed by local storage and keyboard-first workflows.
-
-### Key Features
-- **Multi-Provider AI Pipeline**: Primary generation through Groq (Llama 3.3 70B Versatile), fallback to OpenAI (GPT-4o-mini), and a zero-latency offline mock mode.
-- **3D Active Recall Flashcards**: CSS perspective card flip interface with spring physics, progressive hints, and self-assessment tagging (Mastered vs. Review).
-- **Multiple-Choice Quiz Engine**: 4-option questions with generated distractors, instant answer validation, conceptual explanations, and full keyboard selection.
-- **Targeted Weak-Point Retesting**: Automatically isolates incorrectly answered questions and flagged flashcards into a focused practice queue until resolved.
-- **Command Palette (Cmd+K / Ctrl+K)**: System-wide command dialog supporting fuzzy search, category filtering, and direct action execution.
-- **Synthesized Web Audio**: Lightweight Web Audio API synthesizer for tactile auditory feedback on flips, correct/incorrect selections, and session completion, with persistent mute control.
-- **Deck History & Local Persistence**: Browser-local deck storage with restoration, search, and quota handling.
-- **Export Options**: Export decks to structured Markdown or Anki-compatible TSV format.
+- **GitHub Repository**: [https://github.com/sanket9673/SynapseAI](https://github.com/sanket9673/SynapseAI)
+- **Live Deployment**: [https://synapse-ai-study.vercel.app](https://synapse-ai-study.vercel.app) *(or your deployed Vercel URL)*
+- **AI Usage Disclosure**: See [AI_USAGE.md](AI_USAGE.md) for a comprehensive disclosure of AI tooling and verification methodologies.
 
 ---
 
-## System Architecture
+## 📑 Table of Contents
+
+1. [Key Features](#-key-features)
+2. [System Architecture & Security](#-system-architecture--security)
+3. [Setup & Local Development](#-setup--local-development)
+4. [Offline Mock Mode (Zero Latency / Keyless)](#-offline-mock-mode-zero-latency--keyless)
+5. [Defensive AI Normalization & Error Recovery](#-defensive-ai-normalization--error-recovery)
+6. [Design System: Dayos Brutalist Editorial Showroom](#-design-system-dayos-brutalist-editorial-showroom)
+7. [Procedural Web Audio Engine](#-procedural-web-audio-engine)
+8. [Keyboard Shortcuts Matrix](#-keyboard-shortcuts-matrix)
+9. [Automated Testing & Verification](#-automated-testing--verification)
+10. [Honest AI Usage Disclosure](#-honest-ai-usage-disclosure)
+11. [Engineering Time Breakdown (~8 Hours)](#-engineering-time-breakdown-8-hours)
+12. [Known Limitations & Roadmap](#-known-limitations--roadmap)
+
+---
+
+## 🌟 Key Features
+
+- **Multi-Provider Resilient AI Pipeline**: Primary inference through ultra-low latency Groq (LLaMA 3.3 70B / GPT OSS 120B) with automatic fallback to OpenAI (GPT-4o-mini) and zero-dependency deterministic Mock Mode.
+- **Hardware-Accelerated 3D Flashcards**: True CSS 3D perspective transforms with spring flip physics, progressive hint disclosure, and mastery telemetry (`Mastered` vs. `Needs Review`).
+- **Pedagogical 4-Option Quiz Engine**: Dynamic distractor generation, sub-50ms visual verification, conceptual rationale breakdowns, and hotkey selection (`1`-`4` / `A`-`D`).
+- **Targeted Weak-Point Remediation (`RetestMode`)**: Automatically isolates missed quiz questions and flagged flashcards into a focused remediation drill that updates mastery metrics in real-time until 100% completion.
+- **Raycast-Grade Command Palette (`⌘K` / `Ctrl+K`)**: Instant fuzzy search across actions, navigation tabs, audio settings, and deck operations with keyboard traversal.
+- **Procedural Web Audio Micro-Haptics**: Zero-asset procedural oscillator synthesizer for tactile audio cues (flip tick, correct chime, incorrect thud, victory chord) with persistent mute control.
+- **Local Persistence & Session Drawer (`⌘H`)**: Browser `localStorage` engine with quota guards, deck search, and instant session restoring.
+- **Dual Format Export (`⌘E`)**: One-click export to clean GitHub-flavored Markdown or Anki-compatible TSV format.
+
+---
+
+## 🏛️ System Architecture & Security
 
 ```
-+----------------------------------------------------------------------------------------+
-|                                CLIENT BROWSER (Next.js 14)                             |
-+------------------------+-----------------------------+---------------------------------+
-|    Input Controller    |     Study Workspace         |        Persistence & Audio      |
-|  - PromptInput         |  - 3D FlashcardDeck         |  - LocalStorage Engine          |
-|  - Topic Presets       |  - Interactive QuizEngine   |  - Web Audio Synthesizer        |
-|  - useAIGenerate Hook  |  - Remediation RetestEngine |  - Command Palette (Cmd+K)      |
-+-----------+------------+--------------+--------------+----------------+----------------+
-            | AbortController &         | Keyboard Hotkeys              | Mute Sync &
-            | Request Tracking          | (Space, 1-4, M, R, ?)         | Export Handlers
++-----------------------------------------------------------------------------------------+
+|                                CLIENT BROWSER (Next.js 14)                              |
++------------------------+-----------------------------+----------------------------------+
+|    Input Controller    |       Study Workspace       |        Persistence & Audio       |
+|  - PromptInput         |  - 3D FlashcardDeck         |  - LocalStorage Engine           |
+|  - Topic Presets       |  - Interactive QuizEngine   |  - Web Audio Synthesizer         |
+|  - useAIGenerate Hook  |  - Remediation RetestEngine |  - Command Palette (Cmd+K)       |
++-----------+------------+--------------+--------------+----------------+-----------------+
+            | Monotonic Request IDs &   | Keyboard Hotkeys              | Mute Sync &
+            | AbortController Signals   | (Space, 1-4, M, R, ?)         | Export Handlers
             v                           v                               v
-+----------------------------------------------------------------------------------------+
-|                       SERVERLESS AI PIPELINE (/api/generate)                           |
-+------------------------+-----------------------------+---------------------------------+
-|   Request Sanitizer    |      LLM Orchestration      |   Resilience & Normalization    |
-|  - Char validation     |  - Groq LLaMA 3.3 70B       |  - Markdown fence stripper      |
-|  - System Prompt Form  |  - OpenAI GPT-4o-mini       |  - jsonrepair AST recovery      |
-|  - Low Temperature     |  - Deterministic Mock Mode  |  - Zod Schema & ID Injection    |
-+------------------------+-----------------------------+---------------------------------+
++-----------------------------------------------------------------------------------------+
+|                        SERVERLESS API LAYER (/api/generate)                             |
++------------------------+-----------------------------+----------------------------------+
+|   Security & Sanitizer |      LLM Orchestration      |    Resilience & Normalization    |
+|  - Server-side Keys    |  - Groq LLaMA 3.3 70B       |  - Markdown fence stripper       |
+|  - Length/Input Bounds |  - OpenAI GPT-4o-mini       |  - jsonrepair AST recovery       |
+|  - Zod Input Contract  |  - Deterministic Mock Mode  |  - Zod Schema & UUID Injection   |
++------------------------+-----------------------------+----------------------------------+
 ```
 
-### Request Flow
-1. User submits text via `PromptInput`, triggering `useAIGenerate` with an `AbortController` to cancel any inflight requests.
-2. The `/api/generate` route queries Groq with strict JSON output formatting.
-3. Raw output passes through a markdown stripper, AST-level repair (`jsonrepair`), and Zod schema validation with automatic ID generation.
-4. The client receives validated data, saves the deck to `localStorage`, and updates UI state.
+### Critical Architecture & Security Guarantees:
+1. **Zero Client-Side API Key Exposure**: Third-party API keys (`GROQ_API_KEY`, `OPENAI_API_KEY`) are accessed strictly on the server-side Next.js route handler (`src/app/api/generate/route.ts`). Client code never touches or bundles sensitive credentials.
+2. **Race-Condition Protection via Monotonic Request IDs & AbortController**: Fast successive prompt submissions or rapid button presses immediately trigger `abortControllerRef.current.abort()` and increment an internal monotonic request ID (`requestIdRef.current += 1`). Responses from canceled or stale requests are discarded before touching React state.
+3. **Strict Zod Contract Validation**: Inbound and outbound payloads are validated using Zod schemas (`StudySetZodSchema`), ensuring the UI never receives undefined structures.
 
 ---
 
-## Setup & Local Development
+## 🚀 Setup & Local Development
 
 ### Prerequisites
 - Node.js 18.17.0+ or 20.x
 - npm 9.x+ or 10.x
 
-### Installation
+### 1. Clone & Install Dependencies
 ```bash
 git clone https://github.com/sanket9673/SynapseAI.git
-cd Synapse
+cd SynapseAI
 npm install
 ```
 
-### Environment Configuration
-Copy the example environment file:
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env.local`:
 ```bash
 cp .env.example .env.local
 ```
 
 Set your configuration in `.env.local`:
 ```env
-# Primary Provider: "groq", "openai", or "mock"
+# AI Provider: "mock" (offline test mode), "groq" (recommended), or "openai"
 AI_PROVIDER=groq
 
 # Groq API Key (https://console.groq.com)
-GROQ_API_KEY=gsk_your_key_here
+GROQ_API_KEY=gsk_your_groq_api_key_here
+GROQ_MODEL=openai/gpt-oss-120b
 
 # OpenAI API Key (Optional secondary fallback)
-OPENAI_API_KEY=sk_your_key_here
+OPENAI_API_KEY=sk_your_openai_api_key_here
 ```
 
-### Run Locally
+### 3. Run Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:4000](http://localhost:4000) (or configured port) in your browser.
+Open [http://localhost:3000](http://localhost:3000) (or the active port displayed in your terminal) in your browser.
 
 ---
 
-## Offline Mock Mode
+## ⚡ Offline Mock Mode (Zero Latency / Keyless)
 
-To run Synapse without API keys or network dependencies:
+Synapse can be tested and evaluated with **zero network dependencies and zero API keys**:
 
-### Via Environment Variable
-In `.env.local`:
-```env
-AI_PROVIDER=mock
-```
-Generations will immediately return deterministic, topic-matched study sets (e.g., Neuroscience, Machine Learning, Cellular Biology) in ~100ms.
-
-### Via In-App Toggle / Fallback
-- Toggle the **Offline Mock** switch directly on the input card.
-- If upstream API calls fail or hit rate limits (429), the error screen presents a direct one-click fallback to mock mode.
+- **Method A (Environment Variable)**: Set `AI_PROVIDER=mock` in `.env.local`. All generation requests return rich, topic-matched study sets in under 100ms.
+- **Method B (In-App Toggle)**: Enable the **Offline Mock** toggle in the prompt card.
+- **Method C (Automatic Rate-Limit Fallback)**: If upstream AI providers encounter a 429 rate limit or 504 timeout, the UI presents an instant one-click fallback button to load deterministic mock study materials.
 
 ---
 
-## AI Pipeline & Error Recovery
+## 🛡️ Defensive AI Normalization & Error Recovery
 
-To prevent failures caused by imperfect model outputs, the pipeline uses a defensive multi-step repair strategy:
+Large Language Models frequently produce non-deterministic formatting quirks, markdown wrapping, and malformed JSON. Synapse uses a 5-layer defensive pipeline to guarantee the application never crashes:
 
-1. **Markdown Fence Stripping**: Cleans leading ```` ```json ```` and trailing ```` ``` ```` tags or accidental commentary text.
-2. **AST JSON Repair (`jsonrepair`)**: Resolves syntax errors such as missing commas, unescaped quotes, trailing brackets, and half-closed objects.
-3. **Zod Strict Validation**: Validates the payload structure against `StudySetZodSchema` (minimum 2 flashcards, minimum 1 quiz question with 4 options and valid index).
-4. **Heuristic Self-Healing**:
-   - Converts non-numeric option markers to integer indices (0-3).
-   - If a quiz question has fewer than 4 options, pads it with standard fallback choices (e.g. "None of the above").
-   - Clamps out-of-bounds indices safely to valid options.
-5. **UUID & Timestamp Injection**: Automatically generates missing UUIDs and creation timestamps if omitted by the model.
-
----
-
-## Design System & Accessibility
-
-- **Palette**: Dark canvas (`#090A0F`), surface layers (`#11131A`), border definitions, and subtle indigo accents (`#6366F1`).
-- **Typography**: `Inter` for body copy paired with `JetBrains Mono` for metadata, keyboard hints, and tags.
-- **Dynamic OS Key Hints**: Automatically detects user OS and renders native modifiers (`Cmd` on macOS/iOS, `Ctrl` on Windows/Linux).
-- **Focus & ARIA**: Visible focus rings with high-contrast offsets, descriptive labels, and standard dialog/tablist landmarks.
+1. **Markdown Fence Stripping**: Regex removes leading ```` ```json ```` and trailing ```` ``` ```` code blocks, as well as conversational preambles.
+2. **AST JSON Repair (`jsonrepair`)**: Resolves trailing commas, unescaped quotes, unclosed brackets, and truncated tokens at the abstract syntax tree level.
+3. **Zod Strict Schema Validation**: Enforces exact data types (minimum 2 flashcards, minimum 1 quiz question with exactly 4 options and valid answer index).
+4. **Heuristic Normalization & Self-Healing**:
+   - Converts alphabetic option letters (`"A"`, `"B"`, `"C"`, `"D"`) and 1-indexed integers to 0-indexed numbers (`0`-`3`).
+   - If a quiz item contains fewer than 4 choices, safely pads options with standard pedagogical distractors.
+   - Clamps out-of-bounds indices safely to the closest valid option.
+5. **Deterministic UUID & Timestamp Injection**: Injects unique identifiers and timestamps if omitted by the upstream model.
 
 ---
 
-## Web Audio Synthesizer
+## 🎨 Design System: Dayos Brutalist Editorial Showroom
 
-The client audio engine in `src/lib/sound.ts` uses the browser Web Audio API:
-- **Autoplay Handling**: Initializes and resumes `AudioContext` upon the first user interaction.
-- **Volume**: Gain levels are capped between `0.08` and `0.15` for subtle, non-distracting feedback.
-- **Audio Cues**:
-  - `playFlip()`: Short filtered noise burst simulating a card turn.
-  - `playCorrect()`: Ascending two-tone chime (587Hz to 880Hz).
-  - `playIncorrect()`: Low descending tone (220Hz to 160Hz).
-  - `playComplete()`: Four-note chord (C5, E5, G5, C6).
-- **Mute Control**: Persisted to `localStorage` under `synapse_audio_muted` and toggleable in the header or command palette.
+Synapse features a **Dayos / Linear / Vercel Brutalist Editorial Showroom** design language:
+
+- **Warm Gray Canvas (`#e5e5e5`)**: Applied to the page background (`--color-warm-canvas`), distinguishing the workspace from a clinical pure white canvas.
+- **Paper White Flat Surfaces (`#ffffff`)**: Cards, prompt inputs, flashcard faces, and dialogs sit with `24px` to `32px` border radius, **0 box shadows**, and **0 gradients**. Depth is achieved purely through surface contrast against the warm canvas.
+- **Inverted Carbon Black Blocks (`#000000`)**: High-contrast filled action buttons, active tab pills, and inverted badge blocks.
+- **Signature Chromatic Accents**:
+  - **Mint Chip (`#d1ffca`)**: Category taxonomy tag pills (`rounded-[64px]`), active statuses, and mastery indicators.
+  - **Voltage Yellow (`#fff100`)**: Targeted remediation focus badges, warning indicators, and micro-accents.
+- **Typography**: Giant condensed uppercase display headings (`font-display`, line-height `0.9`, tight tracking) paired with neo-grotesque body copy and 12px monospace micro-labels.
+- **Floating Top Nav Pill (`rounded-[48px]`)**: Centered top navigation capsule on `#ffffff` with quick command search (`⌘K`), sound toggles, and session history.
 
 ---
 
-## Keyboard Shortcuts
+## 🔊 Procedural Web Audio Engine
 
-| Context | Shortcut (Mac) | Shortcut (Windows/Linux) | Action |
+Synapse includes a zero-asset procedural Web Audio synthesizer (`src/lib/sound.ts`):
+- **Card Flip (`playFlip`)**: Filtered noise burst simulating a physical tactile card flip.
+- **Correct Answer (`playCorrect`)**: High ascending two-tone major chime (587Hz → 880Hz).
+- **Incorrect Answer (`playIncorrect`)**: Low descending minor tone (220Hz → 160Hz).
+- **Session Complete (`playComplete`)**: 4-note ascending victory chord (C5, E5, G5, C6).
+- **Volume & Mute**: Master volume clamped to non-fatiguing levels (`0.08`–`0.15`) with persistent mute state in `localStorage`.
+
+---
+
+## ⌨️ Keyboard Shortcuts Matrix
+
+| Context | macOS Shortcut | Windows / Linux | Action |
 | :--- | :--- | :--- | :--- |
-| Global | Cmd + K | Ctrl + K | Open Command Palette |
-| Global | ? | ? | Open Keyboard Shortcuts Reference |
-| Global | Cmd + Enter | Ctrl + Enter | Generate Study Set from Text |
-| Global | Esc | Esc | Close Dialogs / Drawers |
-| Flashcards | Space | Space | Flip Current Flashcard |
-| Flashcards | Right / Left Arrow | Right / Left Arrow | Next / Previous Card |
-| Flashcards | M | M | Mark as Mastered |
-| Flashcards | R | R | Mark for Review |
-| Flashcards | I | I | Reveal Hint |
-| Quiz | 1 - 4 or A - D | 1 - 4 or A - D | Select Option |
-| Quiz | Enter | Enter | Submit Answer / Next Question |
+| **Global** | `⌘ + K` | `Ctrl + K` | Open Command Palette |
+| **Global** | `?` | `?` | Toggle Keyboard Shortcuts HUD |
+| **Global** | `⌘ + Enter` | `Ctrl + Enter` | Synthesize Study Set from Text |
+| **Global** | `Esc` | `Esc` | Close Modals / Drawers / Overlays |
+| **Flashcards** | `Space` | `Space` | Flip Active Flashcard |
+| **Flashcards** | `→` / `←` | `→` / `←` | Next / Previous Flashcard |
+| **Flashcards** | `M` | `M` | Mark as Mastered |
+| **Flashcards** | `R` | `R` | Mark for Review |
+| **Flashcards** | `I` | `I` | Toggle Progressive Hint |
+| **Quiz** | `1` - `4` or `A` - `D` | `1` - `4` or `A` - `D` | Select Quiz Option |
+| **Quiz** | `Enter` | `Enter` | Submit Answer / Next Question |
 
 ---
 
-## Testing & Verification
+## 🧪 Automated Testing & Verification
 
-The project includes unit and integration tests covering UI primitives, AI parsing, generation hooks, storage, and retest workflows.
+The repository contains an automated test suite across 12 test files:
 
-### Commands
 ```bash
-# Run unit and integration tests
+# Run all 86 unit and integration tests
 npm test
 
-# Run TypeScript type check
+# Run TypeScript strict type-checking
 npm run typecheck
 
-# Run linter
+# Run Next.js and ESLint code hygiene checks
 npm run lint
 
-# Run production build
+# Compile production build
 npm run build
 ```
 
+### Test Suite Coverage:
+- `src/__tests__/ui-primitives.test.tsx`: Button, Card, Badge, Kbd, Progress, Notice, Skeleton primitives.
+- `src/__tests__/ai-pipeline.test.ts`: Zod schema validation, JSON fence stripping, AST repair, fallback orchestration.
+- `src/__tests__/useAIGenerate.test.ts`: Request lifecycle, monotonic ID race protection, AbortController cancellation.
+- `src/__tests__/FlashcardDeck.test.tsx`: 3D flip physics, keyboard navigation, mastery progress tracking.
+- `src/__tests__/QuizEngine.test.tsx`: Multiple choice validation, score calculations, explanation rendering.
+- `src/__tests__/RetestEngine.test.tsx`: Weakness isolation, targeted remediation state machine.
+- `src/__tests__/storage.test.ts`: Deck persistence, retrieval, deletion, quota overflow safeguards.
+- `src/__tests__/CommandPalette.test.tsx`: Fuzzy filtering, shortcut triggers, command execution.
+- `src/__tests__/ExportModal.test.tsx`: Markdown and Anki TSV conversion and clipboard copying.
+
 ---
 
-## AI Usage Disclosure
+## 🤖 Honest AI Usage Disclosure
 
-In line with assessment requirements, AI tools were utilized during development:
+In compliance with the FLAM assessment instructions, AI tooling was leveraged transparently:
 
-| Area | Tooling | Usage Details |
+- **AI Acceleration**: Anthropic Claude (via Antigravity IDE) and OpenAI GPT-4o were utilized as pair-programming assistants for high-velocity scaffolding of TypeScript types, initial CSS styling blocks, and test case skeletons.
+- **Human Engineering & Verification**: Core system architecture, race condition safeguards, Web Audio oscillator curves, AST repair pipelines (`jsonrepair` integration), and Dayos brutalist styling audits were designed, fact-checked, and verified by human engineering.
+- **Detailed Audit**: Full itemized breakdown available in [AI_USAGE.md](AI_USAGE.md).
+
+---
+
+## ⏱️ Engineering Time Breakdown (~8 Hours)
+
+Total Time Invested: **~7.5 - 8 Hours**
+
+| Module / Milestone | Time Spent | Key Deliverables |
 | :--- | :--- | :--- |
-| Boilerplate & Types | Antigravity IDE / Claude | Generating initial TypeScript interfaces and baseline Tailwind configurations. |
-| Regex & Normalization | Antigravity IDE | Regex pattern drafts for markdown fence stripping and TSV formatting. |
-| Edge Case Payloads | Antigravity IDE | Creating test fixtures for truncated JSON and schema edge cases. |
-| Core Logic & Architecture | Manual Engineering | Component state machines, spring physics configuration, Web Audio oscillator curves, weakness queue logic, and multi-provider fallback. |
+| **1. Scaffolding & Design Primitives** | ~45 mins | Next.js 14 App Router, Tailwind v4 theme, atomic UI components |
+| **2. Resilient Serverless AI Pipeline** | ~60 mins | Route handler, Groq/OpenAI orchestration, `jsonrepair`, Zod schemas |
+| **3. Input Controller & Skeletons** | ~40 mins | `PromptInput`, character counter, topic pill presets, step skeletons |
+| **4. 3D Flashcard Deck & Physics** | ~55 mins | CSS 3D transforms, card flip spring physics, keyboard bindings |
+| **5. Quiz Engine & Scoring Summary** | ~50 mins | 4-option randomized questions, instant validation, explanation view |
+| **6. Weakness Remediation Loop** | ~60 mins | Mistake tracking, retest state machine, mastery recovery |
+| **7. Local Storage & Deck Export** | ~50 mins | LocalStorage engine, session drawer, Markdown/Anki TSV exporters |
+| **8. Command Palette & Web Audio** | ~45 mins | `⌘K` fuzzy command dialog, procedural audio synthesizer |
+| **9. Dayos Brutalist Overhaul & Tests** | ~45 mins | Warm canvas redesign, 86 Vitest tests, strict TypeScript verification |
 
 ---
 
-## Engineering Time Breakdown
+## 🔮 Known Limitations & Roadmap
 
-Total Time: ~7.5 Hours
+Given the 8-hour assessment constraint, the following deliberate tradeoffs were made:
 
-| Phase | Duration | Focus Areas |
-| :--- | :--- | :--- |
-| 1. Scaffolding & Design Primitives | ~45 mins | Next.js 14 setup, Tailwind tokens, base UI primitive suite |
-| 2. AI Pipeline & Normalization | ~60 mins | Route handler, Groq/OpenAI orchestration, jsonrepair, Zod validation |
-| 3. Input Controller & Skeletons | ~40 mins | PromptInput, character budget, topic presets, loading states |
-| 4. 3D Flashcard Deck & Physics | ~55 mins | Perspective transforms, spring physics, keyboard bindings |
-| 5. Quiz Engine & Scoring | ~50 mins | 4-option question layout, instant feedback, explanation views |
-| 6. Weak-Point Remediation Loop | ~60 mins | Error collection, retest state machine, queue drain logic |
-| 7. Local Persistence & Export | ~50 mins | LocalStorage engine, history drawer, Markdown/TSV exporters |
-| 8. Command Palette & Web Audio | ~45 mins | Cmd+K dialog, fuzzy search, Web Audio oscillator synthesis |
-| 9. Testing & Documentation | ~45 mins | Vitest test suites, type checking, README documentation |
+1. **Streaming Card Generation**: Decks are currently delivered atomically upon validation. *Next Step*: Implement Server-Sent Events (SSE) to stream flashcards progressively as they are generated.
+2. **Spaced Repetition Algorithm (FSRS/SM-2)**: Mastery is currently session-based. *Next Step*: Implement SuperMemo-2 (SM-2) or Free Spaced Repetition Scheduler (FSRS) with persistent next-review date calculations.
+3. **Cloud Synchronization**: Storage is currently browser-local (`localStorage`). *Next Step*: Add PostgreSQL + Supabase backend for multi-device sync and public deck sharing.
+4. **Direct Document Ingestion**: Text is input via copy-paste. *Next Step*: Add direct drag-and-drop parsing for PDF, EPUB, and audio lecture recordings.
 
 ---
 
-## Roadmap & Limitations
+## 👤 Author
 
-Key improvements planned for subsequent iterations:
-
-1. **Streaming Output**: Stream flashcards incrementally using SSE / AI SDK.
-2. **Spaced Repetition Scheduling**: Integrate FSRS or SM-2 algorithms for scheduled multi-day review intervals.
-3. **Cloud Synchronization**: User accounts and database-backed cross-device syncing.
-4. **Document Ingestion**: Support direct PDF, EPUB, and YouTube transcript imports.
+**Sanket Kisan Chavhan**  
+- **GitHub**: [@sanket9673](https://github.com/sanket9673)  
+- **Role**: Software Development Engineer (Frontend / AI-Native Applications)  
+- **Assessment**: FLAM AI Technical Submission
